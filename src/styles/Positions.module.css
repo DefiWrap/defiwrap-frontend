@@ -1,0 +1,57 @@
+.container {
+  padding: 0 2rem;
+   display: flex;
+  flex-direction: column;
+  align-items: center;
+     
+}
+
+.main {
+  min-height: 100vh;
+  min-width: 100vh;
+  margin-top: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+.innerbox{
+    width: 100%;
+    margin-top: var(--chakra-space-7);
+    border-width: 10px;
+    border-radius: var(--chakra-radii-lg);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    min-height: 20rem;
+    align-items: center;
+}
+.innerboxactive{
+    width: 100%;
+    margin-top: var(--chakra-space-7);
+    border-width: 10px;
+    border-radius: var(--chakra-radii-lg);
+    display: flex;
+    flex-direction: row;
+    /* justify-content: center; */
+    min-height: 20rem;
+    
+    /* align-items: center; */
+}
+.topbox{
+    width: 80%;
+    margin-top: var(--chakra-space-7);
+    border-width: 10px;
+    border-radius: var(--chakra-radii-lg);
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    min-height: 12rem;
+    /* align-items: center; */
+}
+
+.mytab{
+    
+    border-width: 10px;
+   
+}
