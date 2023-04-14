@@ -100,7 +100,7 @@ const [query, setQuery] = useState('');
                       <InputGroup>
                         <InputLeftElement
                           pointerEvents='none'
-                          children={ <FaEthereum color='#D53F8C' h={ 10 } w={ 10} />}
+                          children={[<FaEthereum color='#D53F8C' h={ 10 } w={ 10} />]}
                         />
                       <Input       focusBorderColor='pink.400'
                             errorBorderColor='red.300'
@@ -156,8 +156,9 @@ const [query, setQuery] = useState('');
                       <InputGroup>
                           <InputLeftElement
                             pointerEvents='none'
-                            children={ <FaEthereum color='#D53F8C' h={ 10 } w={ 10} />}
-                          />
+                            children={ [<FaEthereum color='#D53F8C' h={ 10 } w={ 10} />]}
+                      />
+                      
                           <Input w={"120px"}  focusBorderColor='pink.400'
                                 errorBorderColor='red.300'
                           type='number' placeholder='0' />

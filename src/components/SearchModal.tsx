@@ -65,7 +65,7 @@ const [query, setQuery] = useState('');
     <>
       {/* <Button onClick={onOpen}>Open Modal</Button> */}
       
-        <Button onClick={onOpen} leftIcon={<FaEthereum />} rightIcon={<FaArrowDown />} colorScheme='pink' variant='solid'>
+        <Button  onClick={onOpen} leftIcon={<FaEthereum />} rightIcon={<FaArrowDown />} colorScheme='pink' variant='solid'>
                             Eth
         </Button>
       <Modal
