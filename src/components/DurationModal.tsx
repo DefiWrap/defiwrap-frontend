@@ -91,7 +91,7 @@ const [query, setQuery] = useState('');
                 
             
                {/* How much ETH do you want to invest? Card */}
-                <Card >
+                <Card variant = "outline" >
                   <CardBody borderRadius='lg'>
                     <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
                       <Heading  mb='8px' size='sm'>How much ETH do you want to invest?</Heading>  
@@ -122,7 +122,7 @@ const [query, setQuery] = useState('');
                 </Card>
                       
     {/* How many days Card */}
-              <Card >
+              <Card variant = "outline" >
                 <CardBody borderRadius='lg'>
                    <Stack spacing={ 4 }>
                   </Stack>
@@ -148,7 +148,7 @@ const [query, setQuery] = useState('');
                 </CardBody> 
               </Card>
            
-             <Card >
+             <Card variant = "outline" >
                   <CardBody borderRadius='lg'>
                 <Stack direction='row' justifyContent={ "flex-start" } alignItems={"center"}>
                   <Heading size='sm'>We'll swap</Heading> 

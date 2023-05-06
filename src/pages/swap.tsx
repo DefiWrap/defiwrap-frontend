@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import * as React from "react";
 import { useAccount, useSignMessage } from "wagmi";
-import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel } from '@chakra-ui/react'
+import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Checkbox } from '@chakra-ui/react'
 import styles from "../styles/PositionsDetail.module.css";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { verifyMessage } from "ethers/lib/utils";
 import { SignMessageArgs } from "@wagmi/core";
 import { NextSeo } from "next-seo";
 import { Eth, Matic } from "@chakra-icons/cryptocurrency-icons";
-import { FaArrowDown, FaArrowRight, FaChartLine, FaEthereum, FaQuestionCircle } from "react-icons/fa";
+import { FaArrowDown, FaArrowRight, FaChartLine, FaEthereum, FaGasPump, FaQuestionCircle } from "react-icons/fa";
 import { DurationModal } from "../components/DurationModal";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { MdArrowDropDown, MdSwapHorizontalCircle } from "react-icons/md";
@@ -22,10 +22,71 @@ import { SearchModal } from "../components/SearchModal";
 export default function SignExample() {
   const { isConnected } = useAccount();
 
-  if (isConnected) {
+  const [ fromAmount, setFromAmount ] = useState( 0 )
+  const [ sellTokenAddress, setSellTokenAddress ] = useState( "" )
+  const [ buyTokenAddress, setBuyTokenAddress ] = useState( { address: ""} )
+  const [ sellAmount, setSellamount ] = useState( 0 )
+  const [ sellToken, setSellToken ] = useState( "" )
+  const [ buyToken, setbuyToken ] = useState( "" )
+  
+
+
+  const handleDataFromSearchModel = ( buyTokenData: any ) =>
+  {
+  
+    console.log("buyTokenData",JSON.parse(buyTokenData).address)
+    setbuyToken(buyTokenData);
+  };
+
+  const handleSellFromSearchModel = (sellTokenData : any) => {
+    setSellTokenAddress(sellTokenData);
+  };
+
+  const [tokens, setTokens] = useState([])
+
+  const fetchData = () => {
+    fetch(`https://api.0x.org/swap/v1/quote?buyToken=${buyToken}&sellToken=${sellToken}&sellAmount=${sellAmount}`)
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        setTokens(data)
+      })
+  }
+
+   useEffect(() => {
+     fetchData()  
+   }, [] )
+  
+  // function getval(e : any) {
+
+  //   const newQuery1 = e.target.id;
+  //   alert(`address is ${newQuery1}`)
+  // }
+
+
+
+
+    async function getQuote(account){
+    console.log("Getting Quote");
+  
+    
+  
+    const params = {
+        sellToken: sellTokenAddress,
+        buyToken: buyTokenAddress,
+        sellAmount: sellAmount,
+        takerAddress: account,
+    }
+}
+
+  if ( isConnected )
+  {
+    
+    
     return (
       <>
-         <div className={styles.container}>
+         <div  className={styles.container}>
             <div className={styles.main}>
                 
 
@@ -34,14 +95,14 @@ export default function SignExample() {
                             
                   
                                     {/* main card   */}
-                            <Card m='12px' maxW='sm'>
+                            <Card  m='12px' maxW='sm'>
                               <CardBody> 
                                 
                                 {/* Sell recive Card */}
-                                <Card>
+                                <Card variant = "outline">
                                   <CardBody borderRadius='lg'>
                                           <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
-                                            
+                                           
                                               <Select iconColor="pink.500" icon={ <FaEthereum /> } placeholder='Ethereum' >
                                                 <option value='option1'>Option 1</option>
                                                 <option value='option2'>Option 2</option>
@@ -52,38 +113,90 @@ export default function SignExample() {
                                 </Card>
 
 
-                                 {/* Sell recive Card */}
-              <Card mt={5}>
+                    {/* Sell recive Card */ }
+                    <Card variant = "outline" mt={5} >
                 <CardBody borderRadius='lg'>
-                  <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
-                    <Heading  mb='5px' size='sm'>Sell</Heading>
-                    <Heading  mb='5px' pr={ 1 } size='sm'>Receive</Heading>
+                     <Stack  direction='row' justifyContent={ "space-between" } >
+                    <Heading  mb='5px' size='sm'>You Pay</Heading>
+                    <Text  mb='5px' pr={ 1 } size='xs'>Balance 0 </Text>
                   </Stack>
-                  <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
+              <Card variant = "outline" >
+                <CardBody borderRadius='lg'>
+                 
+                  <Stack direction='column'  >
                                      
-
-                   <SearchModal></SearchModal>
-
-                
-                      <Icon as={MdSwapHorizontalCircle} w={10} h={10} color='black' />
-
-
-                    <Button  leftIcon={<FaQuestionCircle />} rightIcon={<FaArrowDown />} colorScheme='pink' variant='solid'>
-                      Select
-                    </Button>
-                    
-                  </Stack>
-                </CardBody> 
-              </Card>
-                                
-
-
+                              <p>Data from child component: {buyToken}</p>
                               
 
+                   <SearchModal getBuyTokenAddressData={handleDataFromSearchModel}  status={"You Sell"}></SearchModal>
+
+                
+                     <Input  style={{  textAlign:"center"}} placeholder="0"></Input>
+                    
+                    </Stack>                                                                                                                                                                                                                        
+                        <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                                     
+
+                
+                              <Text  fontSize='sm'>
+                              $0.00
+                              </Text>
+                    
+                        </Stack>
+                        
+                </CardBody> 
+                        </Card>
+                        
+                      </ CardBody>
+                    </Card>
+
+                    <Stack direction='row' justifyContent={ "center" } mt='-3' mb='-9'  position="relative" >
+                                            <Icon as={MdSwapHorizontalCircle} zIndex={1} w={10} h={10} />
+
+                    </Stack>
+
+                    <Card variant = "outline" mt={5} >
+                <CardBody borderRadius='lg'>
+                     <Stack  direction='row' justifyContent={ "space-between" } >
+                    <Heading  mb='5px' size='sm'>You Receive</Heading>
+                   
+                  </Stack>
+              <Card variant = "outline" >
+                <CardBody borderRadius='lg'>
+                 
+                  <Stack direction='column'  >
+                                     
+                                                  <p>Data from child component: { sellTokenAddress }</p>
+                                                                             
+                   <SearchModal getSellTokenAddressData={handleSellFromSearchModel} status={"You Receive"} ></SearchModal>
+
+                
+                              <Input>
+                              </Input>
+                    
+                  </Stack>
+                    <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                                     
+
+ 
+
+                
+                     <Text  fontSize='sm'>
+                  $0.00
+                  </Text>
+                    
+                        </Stack>
+                        
+                </CardBody> 
+                        </Card>
+                        
+                      </ CardBody>
+                    </Card>
+
+                
                        {/* bottom Card */}
-                                <Card mt={3}>
+                                <Card variant = "outline" mt={3}>
                                   <CardBody borderRadius='lg'>
-                                  
                                     <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
                                                   <Heading size='sm'>Selected route:</Heading>
                                                   <Heading size='sm'>-</Heading>
@@ -93,18 +206,16 @@ export default function SignExample() {
                                                   <Heading size='sm'>-</Heading>
                                     </Stack>
                                     <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
-                                                  <Heading size='sm'>Minimum received:
-</Heading>
+                                                  <Heading size='sm'>Minimum received:</Heading>
                                                   <Heading size='sm'>-</Heading>
                                     </Stack>
-                                  
                                   </CardBody> 
                                 </Card>
 
 
   
                                 {/* button Card */}
-                                <Card mt={3}>
+                                <Card variant = "outline" mt={3}>
                                   <CardBody borderRadius='lg'>
                                   
                                     <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
@@ -129,7 +240,7 @@ export default function SignExample() {
                                     
 
                                           {/* Sell recive Card */}
-                                          <Card m={"12px"} minW={"lg"} minH={"xs"} width={"100%"} >
+                                          <Card  m={"12px"} minW={"lg"} minH={"xs"} width={"100%"} >
                                             <CardBody   borderRadius='lg'>
                                                         
                                     
@@ -140,7 +251,7 @@ export default function SignExample() {
                                                           
                                                           
                                                             <FaChartLine color="pink.500" size={"70px"}></FaChartLine>
-                                                                <Heading size='lg'>Introducing Mean Defiwrap's Meta Aggregator</Heading>
+                                                                <Heading size='lg'>Introducing Defiwraps Meta Aggregator</Heading>
                         
 
                                                           <Stack direction='row' justifyContent={"center"} alignItems={"center"}> 
@@ -160,14 +271,85 @@ export default function SignExample() {
                                                       <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
 
                                                           
-                        <Text>We find the best prices across all of DeFi so you don't have to.
+                        <Text>We find the best prices across all of DeFi so you do not have to.
                           <br></br> You can now make sure you are getting the best deal possible
 
 Supporting:</Text>
                                                                 <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
                                                                   <b>&lt; 0.001</b>  (1.03USD)
                                                                 </Button>
-                                                          </Stack>
+                      </Stack>
+                      
+
+                       <Card variant = "outline"  mt={3}>
+                                  <CardBody borderRadius='lg'>
+                                    <Stack mb={3} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
+                            {/* <Heading size='sm'></Heading> */}
+                            <Checkbox size='md' colorScheme='pink' defaultChecked>
+    Selected
+  </Checkbox>
+                                                  <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"}>
+                                                    <Button borderRadius={50} size={"xs"} colorScheme="green" >
+                                                        <b>Best</b>
+                                                    </Button>
+                                                    <Button borderRadius={50} size={"xs"} colorScheme="gray" leftIcon={<FaGasPump h={ 4 } w={ 4 }> </FaGasPump>} >
+                                                          1.03 $
+                                                    </Button>
+                                                  </Stack>
+                                    </Stack>
+                          
+                                <hr></hr>                          
+            <Stack mt={6} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
+                           
+                            <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
+                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src="https://cdn.furucombo.app/assets/img/token/1INCH.svg"
+                              ></img>
+                                  <Stack direction='column'>
+                                        <Heading size='md'>1 Matic</Heading>
+                                         
+                                        <Text pt={-5} size='xs'>$0.98</Text>
+                              </Stack>     
+                              <Text color={"pink.500"}  size='xl'>
+                                 ●
+                            </Text> 
+                            </Stack>
+                                                            <hr style={ { borderStyle: "dotted", borderTopWidth: "5px", width: "15%" } } ></hr>
+
+                              <Stack direction='row' >
+                      
+                              <Stack direction='row' width={ "100%" } alignItems={ "center" }>
+                             
+                                         <Button borderRadius={50} size={"sm"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} >
+                                                                  <b>KyberSwap</b>
+                                  </Button>
+                            
+                              
+                                 
+                                  
+                          </Stack>          
+                            </Stack>
+
+                          <hr style={ { borderStyle: "dotted", borderTopWidth: "5px", width: "15%" } } ></hr>
+<Heading color={"pink.500"}  size='md'>
+                                &rarr;
+                            </Heading> 
+                            <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
+                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src="https://cdn.furucombo.app/assets/img/token/1INCH.svg"
+                              ></img>
+                                  <Stack direction='column'>
+                                        <Heading size='md'>14.1 TUT</Heading>
+                                         
+                                        <Text pt={-5} size='xs'>$0.98 (-0.40% )</Text>
+                                 </Stack>          
+                            </Stack>
+                                    </Stack>
+                                    
+                          
+
+
+
+                                  </CardBody> 
+                                </Card>
                                               
 
                                             </CardBody> 
@@ -196,7 +378,7 @@ Supporting:</Text>
       </AccordionButton>
     </h2>
     <AccordionPanel pb={4}>
-      You've probably heard many DEXes or aggregators claim that they offer the best prices. Well, now you can be sure. We will query all of them at the same time so you don't have to, and you will be able to choose the one that best fits your needs
+      You haveprobably heard many DEXes or aggregators claim that they offer the best prices. Well, now you can be sure. We will query all of them at the same time so you do not have to, and you will be able to choose the one that best fits your needs
     </AccordionPanel>
   </AccordionItem>
 

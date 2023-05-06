@@ -112,13 +112,13 @@ export default function SignExample() {
                     <Heading m='12px' size='sm'>Active</Heading>
 
                                     {/* main card   */}
-                            <Card m='12px' maxW='sm'>
+                            <Card variant = "outline" m='12px' maxW='sm'>
                               <CardBody>
 
                             
                                 
                                 {/* Sell recive Card */}
-                                <Card>
+                                <Card variant = "outline">
                                   <CardBody borderRadius='lg'>
                                               <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
                                                 
@@ -140,7 +140,7 @@ export default function SignExample() {
                                 </Card>
 
                                 {/*Eth to matic card */}
-                                  <Card mt={2}>
+                                  <Card variant = "outline" mt={2}>
                                     <CardBody borderRadius='lg'>
                                       <Stack mt={2} direction='row' alignItems={"center"}>
                                         <Text  fontSize='sm'>
@@ -199,7 +199,7 @@ export default function SignExample() {
 
                                 
                                 {/* Executes Card */}
-                                <Card mt={3}>
+                                <Card variant = "outline" mt={3}>
                                   <CardBody borderRadius='lg'>
                                   
                                     <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>

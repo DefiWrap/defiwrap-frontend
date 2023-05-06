@@ -26,11 +26,11 @@ const Home: NextPage = () => {
           <p className={styles.description}>
             Connect your wallet and start playing around
           </p> */}
-        <Card maxW='md'>
+        <Card variant = "outline" maxW='md'>
             <CardBody>
 
               {/* Select Network Card */}
-              <Card>
+              <Card variant = "outline">
                 <CardBody borderRadius='lg'>
                   {/* <Text mb='8px'>Choose Network:</Text> */}
                   <Heading  mb='8px' size='sm'>Choose Network:</Heading>
@@ -44,7 +44,7 @@ const Home: NextPage = () => {
               </Card>
               
                {/* Sell recive Card */}
-              <Card mt={5}>
+              <Card variant = "outline" mt={5}>
                 <CardBody borderRadius='lg'>
                   <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
                     <Heading  mb='5px' size='sm'>Sell</Heading>
@@ -68,7 +68,7 @@ const Home: NextPage = () => {
               </Card>
 
                {/* How much ETH do you want to invest? Card */}
-                <Card mt={5}>
+                <Card variant = "outline" mt={5}>
                   <CardBody borderRadius='lg'>
                     <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
                       <Heading  mb='8px' size='sm'>How much ETH do you want to invest?</Heading>  
@@ -100,7 +100,7 @@ const Home: NextPage = () => {
 
 
                {/* Executes Card */}
-              <Card mt={5}>
+              <Card variant = "outline" mt={5}>
                 <CardBody borderRadius='lg'>
                    <Stack spacing={ 4 }>
                 <Heading  fontSize='lg' mb={7}>
@@ -132,7 +132,7 @@ const Home: NextPage = () => {
 
               
                {/* Executes Card */}
-              <Card mt={5}>
+              <Card variant = "outline" mt={5}>
                 <CardBody borderRadius='lg'>
                  
                   <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>

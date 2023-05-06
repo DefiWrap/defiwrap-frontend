@@ -6,7 +6,7 @@ export const SITE_DESCRIPTION = 'Easy crypto investments'
 export const SITE_URL = '#'
 
 export const THEME_INITIAL_COLOR = 'system'
-export const THEME_COLOR_SCHEME: ThemingProps['colorScheme'] = 'orange'
+export const THEME_COLOR_SCHEME: ThemingProps['colorScheme'] = ''
 export const THEME_CONFIG = { initialColorMode: THEME_INITIAL_COLOR }
 
 export const SOCIAL_MEDIUM = '#'
