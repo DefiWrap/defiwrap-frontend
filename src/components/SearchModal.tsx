@@ -59,7 +59,7 @@ let currentSelectSide;
 //     document.getElementById("gas_estimate").innerHTML = swapPriceJSON.estimatedGas;
 // }
 
-export function SearchModal ({ status , getBuyTokenAddressData ,getSellTokenAddressData  })
+export function SearchModal ({ status , getTokenAddressData  })
 {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -69,36 +69,59 @@ export function SearchModal ({ status , getBuyTokenAddressData ,getSellTokenAddr
 
  
   
-  const [tokens, setTokens] = useState([])
 
-  const fetchData = () => {
-    fetch("https://tokens.coingecko.com/uniswap/all.json")
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        setTokens(data)
-      })
-  }
+  // const fetchData = async () => {
+  //   fetch("https://tokens.coingecko.com/uniswap/all.json")
+  //     .then(response => {
+  //       return  response.json()
+  //     })
+  //     .then(data => {
+  //       setTokens( data )
+       
+        
+  //     })
+  // }
 
-   useEffect(() => {
-     fetchData()
+  //  useEffect(() => {
+  //    fetchData()
+  //           console.log("data ========>>>>>>",tokens)
 
      
-   }, [] )
+  //  }, [] )
+    const [tokens, setTokens] = useState([])
+
   
+
+  useEffect(() => {
+    const dataFetch = async () => {
+  try {
+    const response = await fetch("https://tokens.coingecko.com/uniswap/all.json");
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    setTokens(data);
+  } catch (error) {
+    console.error('There was a problem fetching data:', error);
+  }
+};
+
+    dataFetch();
+           // console.log("data ========>>>>>>",tokens)
+
+  }, [tokens]);
 
   
  
   // Define a function to render the search result on the page
   const [query, setQuery] = useState('');
-  const [ results, setResults ] = useState( [] );
+  const [ results, setResults ] = useState(tokens);
 
   const [tokenQry, setTokenQry]=useState('')
   const [ToToken, setToToken] = useState([{"chainId":1,"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"WETH","symbol":"WETH","decimals":18,"logoURI":"https://assets.coingecko.com/coins/images/2518/thumb/weth.png?1628852295"}]);
+    
+  // setToToken( tokens )
 
-
-  
   function handleChange ( event: any )
       {
         
@@ -106,7 +129,9 @@ export function SearchModal ({ status , getBuyTokenAddressData ,getSellTokenAddr
         const newQuery = event.target.value;
         setQuery(newQuery);
         const newResults = tokens.tokens.filter(item =>
-          item.name.toLowerCase().includes(newQuery.toLowerCase())
+          item.name.toLowerCase().includes( newQuery.toLowerCase() )
+          //  &&
+          //  item.chainId== 1
         );
         setResults( newResults );
         
@@ -119,10 +144,9 @@ export function SearchModal ({ status , getBuyTokenAddressData ,getSellTokenAddr
                 item.address.toLowerCase().includes(tokenAddress.toLowerCase())
               );
              setToToken(tokenDetails);
-            console.log("new result ==================?>>>>>>>>>>>>>>", tokenDetails)
-                
-            getBuyTokenAddressData(JSON.stringify(tokenDetails[0]));
-                    //  console.log("token", tokens.tokens)      
+            console.log("new result ==================>>>>>>>>>>>>>>", tokenDetails)
+        getTokenAddressData(JSON.stringify(tokenDetails[0]));
+          
            onClose()
 
   }
@@ -166,6 +190,8 @@ export function SearchModal ({ status , getBuyTokenAddressData ,getSellTokenAddr
         finalFocusRef={finalRef}
         isOpen={isOpen}
         onClose={ onClose }
+
+
       
       >
         <ModalOverlay />

@@ -9,11 +9,12 @@ import { verifyMessage } from "ethers/lib/utils";
 import { SignMessageArgs } from "@wagmi/core";
 import { NextSeo } from "next-seo";
 import { Eth, Matic } from "@chakra-icons/cryptocurrency-icons";
-import { FaArrowDown, FaArrowRight, FaChartLine, FaEthereum, FaGasPump, FaQuestionCircle } from "react-icons/fa";
+import { FaArrowDown, FaArrowRight, FaChartLine, FaDeploydog, FaDrawPolygon, FaEthereum, FaGasPump, FaQuestionCircle } from "react-icons/fa";
 import { DurationModal } from "../components/DurationModal";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { MdArrowDropDown, MdSwapHorizontalCircle } from "react-icons/md";
 import { SearchModal } from "../components/SearchModal";
+import { ethers } from "ethers";
 
 
 
@@ -22,64 +23,71 @@ import { SearchModal } from "../components/SearchModal";
 export default function SignExample() {
   const { isConnected } = useAccount();
 
-  const [ fromAmount, setFromAmount ] = useState( 0 )
+  
   const [ sellTokenAddress, setSellTokenAddress ] = useState( "" )
-  const [ buyTokenAddress, setBuyTokenAddress ] = useState( { address: ""} )
+  const [ buyTokenAddress, setBuyTokenAddress ] = useState( "" )
   const [ sellAmount, setSellamount ] = useState( 0 )
   const [ sellToken, setSellToken ] = useState( "" )
   const [ buyToken, setbuyToken ] = useState( "" )
+ 
   
 
 
-  const handleDataFromSearchModel = ( buyTokenData: any ) =>
+  const handleBuyFromSearchModel = ( buyTokenData: any ) =>
   {
   
-    console.log("buyTokenData",JSON.parse(buyTokenData).address)
-    setbuyToken(buyTokenData);
+    //console.log("buyTokenData",JSON.parse(buyTokenData).symbol)
+    setBuyTokenAddress( JSON.parse( buyTokenData ).address );
+          console.log("Buy token ======>>>>>>>>",buyTokenAddress)
+
   };
 
-  const handleSellFromSearchModel = (sellTokenData : any) => {
-    setSellTokenAddress(sellTokenData);
+
+  const handleSellFromSearchModel = ( sellTokenData: any ) =>
+  {
+   // console.log("buyTokenData",JSON.parse(sellTokenData).symbol)
+    setSellTokenAddress( JSON.parse( sellTokenData ).address );
+          console.log("Sell token ======>>>>>>>>",sellTokenAddress)
+
   };
 
-  const [tokens, setTokens] = useState([])
+const [tokens, setTokens] = useState([])
+ async  function getQuote ()
+  {
+    
+ const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-  const fetchData = () => {
-    fetch(`https://api.0x.org/swap/v1/quote?buyToken=${buyToken}&sellToken=${sellToken}&sellAmount=${sellAmount}`)
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        setTokens(data)
-      })
+  const accounts = await provider.listAccounts();
+   console.log( accounts[ 0 ] );
+   
+const qs = require('qs');
+
+const params = {
+    // Not all token symbols are supported. The address of the token can be used instead.
+    sellToken: sellTokenAddress,
+    buyToken: buyTokenAddress,
+    // Note that the DAI token uses 18 decimal places, so `sellAmount` is `100 * 10^18`.
+  sellAmount: ( sellAmount * 10 ** 18 ),
+   // takerAddress:accounts[0],
+};
+
+ const headers : string = '0x-api-key: e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e'; // This is a placeholder. Get your live API key from the 0x Dashboard (https://dashboard.0x.org/apps)
+// --header '0x-api-key: e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e
+   const url = `https://api.0x.org/swap/v1/quote?${qs.stringify(params)}`
+const response = await fetch(
+    url//, { headers : String }
+); // Using the global fetch() method. Learn more https://developer.mozilla.org/en-US/docs/Web/API/fetch
+console.log("ResponseURL =============>>>>>>>>>>>>>",url);
+
+console.log("Response =============>>>>>>>>>>>>>",await response.json());
   }
 
    useEffect(() => {
-     fetchData()  
+      getQuote()
+     
    }, [] )
   
-  // function getval(e : any) {
-
-  //   const newQuery1 = e.target.id;
-  //   alert(`address is ${newQuery1}`)
-  // }
-
-
-
-
-    async function getQuote(account){
-    console.log("Getting Quote");
   
-    
-  
-    const params = {
-        sellToken: sellTokenAddress,
-        buyToken: buyTokenAddress,
-        sellAmount: sellAmount,
-        takerAddress: account,
-    }
-}
-
   if ( isConnected )
   {
     
@@ -100,10 +108,11 @@ export default function SignExample() {
                                 
                                 {/* Sell recive Card */}
                                 <Card variant = "outline">
-                                  <CardBody borderRadius='lg'>
+                      <CardBody borderRadius='lg'>
+                        <Button onClick={getQuote}>GO</Button>
                                           <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
                                            
-                                              <Select iconColor="pink.500" icon={ <FaEthereum /> } placeholder='Ethereum' >
+                                              <Select iconColor="pink.500" icon={ <FaDrawPolygon /> } placeholder='Polygon' >
                                                 <option value='option1'>Option 1</option>
                                                 <option value='option2'>Option 2</option>
                                                 <option value='option3'>Option 3</option>
@@ -125,13 +134,13 @@ export default function SignExample() {
                  
                   <Stack direction='column'  >
                                      
-                              <p>Data from child component: {buyToken}</p>
+                              <p>Data from child component: {buyTokenAddress}</p>
                               
 
-                   <SearchModal getBuyTokenAddressData={handleDataFromSearchModel}  status={"You Sell"}></SearchModal>
+                   <SearchModal getTokenAddressData={handleBuyFromSearchModel}  status={"You Sell"}></SearchModal>
 
                 
-                     <Input  style={{  textAlign:"center"}} placeholder="0"></Input>
+                     <Input onBlur={e=> setSellamount(Number(e.target.value))} style={{  textAlign:"center"}} placeholder="0"></Input>
                     
                     </Stack>                                                                                                                                                                                                                        
                         <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
@@ -168,7 +177,7 @@ export default function SignExample() {
                                      
                                                   <p>Data from child component: { sellTokenAddress }</p>
                                                                              
-                   <SearchModal getSellTokenAddressData={handleSellFromSearchModel} status={"You Receive"} ></SearchModal>
+                   <SearchModal getTokenAddressData={handleSellFromSearchModel} status={"You Receive"} ></SearchModal>
 
                 
                               <Input>
