@@ -2,17 +2,109 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import { Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center } from '@chakra-ui/react'
+import { Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Box } from '@chakra-ui/react'
 import { FaEthereum, FaQuestionCircle, FaArrowDown, FaArrowsAltH } from 'react-icons/fa';
 import { MdSwapHorizontalCircle } from 'react-icons/md';
 import { Eth } from "@chakra-icons/cryptocurrency-icons";
 import { SearchModal } from "../components/SearchModal";
+import { Header } from '../components/layout/Header';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import Chart from "../components/Chart";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend
+} from "recharts";
+
+const data = [
+  {
+    name: "Page A",
+    uv: 4000,
+    pv: 2400,
+    amt: 2400
+  },
+  {
+    name: "Page B",
+    uv: 3000,
+    pv: 1398,
+    amt: 2210
+  },
+  {
+    name: "Page C",
+    uv: 2000,
+    pv: 9800,
+    amt: 2290
+  },
+  {
+    name: "Page D",
+    uv: 2780,
+    pv: 3908,
+    amt: 2000
+  },
+  {
+    name: "Page E",
+    uv: 1890,
+    pv: 4800,
+    amt: 2181
+  },
+  {
+    name: "Page F",
+    uv: 2390,
+    pv: 3800,
+    amt: 2500
+  },
+  {
+    name: "Page G",
+    uv: 3490,
+    pv: 4300,
+    amt: 2100
+  }
+];
+
+  
+
+// const [chartData, setChartData] = useState([]);
+// const endpoint = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30';
+
+
+// const fetchData = async () =>
+// {
+
+//   const response = await axios.get(endpoint);
+//   const prices = response.data.market_data.sparkline_7d.price;
+//   const data = Array.from({ length: prices.length }, (_, i) => ({
+//     name: '',
+//     price: prices[i],
+//   }));
+//   setChartData(data);
+// };
 
 
 
+const Home: NextPage = () =>
+{
 
-
-const Home: NextPage = () => {
+const chart = (interval: string | number) => (
+    <ResponsiveContainer height={500} width={800}>
+      <LineChart data={data} margin={{ right: 15, top: 10 }}>
+        <CartesianGrid stroke="#" />
+        <XAxis dataKey="name" interval={interval} />
+        <YAxis interval={interval} />
+        <Line
+          type="monotone"
+          dataKey="pv"
+          stroke="#3182CE"
+          activeDot={{ r: 8 }}
+        />
+        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+      </LineChart>
+    </ResponsiveContainer>
+  );
   return (
 
     <>
@@ -26,7 +118,8 @@ const Home: NextPage = () => {
           <p className={styles.description}>
             Connect your wallet and start playing around
           </p> */}
-        <Card variant = "outline" maxW='md'>
+          <Card maxW='md'>
+            
             <CardBody>
 
               {/* Select Network Card */}
@@ -153,6 +246,26 @@ const Home: NextPage = () => {
             
             
           </Card>
+
+        
+          {/* Line chart code starts from Here */ }
+          
+          <Card minWidth={700} height="720px" ml={3} >
+            <CardBody>
+              <Heading size={ "lg" }>$1906.36 USD</Heading>
+         
+              <Stack style={{display:"flex",flexDirection:"row", alignItems:"flex-end"}} >
+                <Heading color={"blue.500"}  pr={1} size='md'> ● </Heading> <Text>DefiWrap</Text>   <Heading color={"green.500"} pl={5} size='md' pr={1}> ● </Heading> <Text>DefiLlama</Text> 
+              </Stack>
+            
+
+
+            
+      {chart("preserveStart")}
+            </CardBody>
+          </Card>
+      
+          
         </main>
         </div>
     </>

@@ -9,12 +9,17 @@ import { verifyMessage } from "ethers/lib/utils";
 import { SignMessageArgs } from "@wagmi/core";
 import { NextSeo } from "next-seo";
 import { Eth, Matic } from "@chakra-icons/cryptocurrency-icons";
-import { FaArrowDown, FaArrowRight, FaChartLine, FaDeploydog, FaDrawPolygon, FaEthereum, FaGasPump, FaQuestionCircle } from "react-icons/fa";
+import { FaArrowDown, FaArrowRight, FaChartLine, FaDeploydog, FaDrawPolygon, FaEthereum, FaGasPump, FaQuestionCircle, FaRecycle, FaRegCircle } from "react-icons/fa";
 import { DurationModal } from "../components/DurationModal";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { MdArrowDropDown, MdSwapHorizontalCircle } from "react-icons/md";
+import { MdArrowDropDown, MdRefresh, MdSwapHorizontalCircle } from "react-icons/md";
 import { SearchModal } from "../components/SearchModal";
 import { ethers } from "ethers";
+import Web3 from "web3";
+const qs = require( 'qs' );
+const BigNumber = require('bignumber.js');
+const web3 = require('web3');
+
 
 
 
@@ -26,9 +31,17 @@ export default function SignExample() {
   
   const [ sellTokenAddress, setSellTokenAddress ] = useState( "" )
   const [ buyTokenAddress, setBuyTokenAddress ] = useState( "" )
+  const [ buyToken, setBuyToken ] = useState( "" )
+  const [ buyTokenImg, setbuyTokenImg ] = useState( "" )
   const [ sellAmount, setSellamount ] = useState( 0 )
   const [ sellToken, setSellToken ] = useState( "" )
-  const [ buyToken, setbuyToken ] = useState( "" )
+  const [ sellTokenImg, setSellTokenImg ] = useState( "" )
+  const [ toAmount, setToAmount ] = useState( 0 )
+  const [ estimatedGas, setEstimatedGas ] = useState(0)
+  const [ price,setPrice ]= useState(0)
+  let swapQuoteJSON = ""
+  let swapPriceJSON = ""
+ 
  
   
 
@@ -38,6 +51,9 @@ export default function SignExample() {
   
     //console.log("buyTokenData",JSON.parse(buyTokenData).symbol)
     setBuyTokenAddress( JSON.parse( buyTokenData ).address );
+    setBuyToken( JSON.parse( buyTokenData ).symbol )
+    setbuyTokenImg(JSON.parse( buyTokenData ).logoURI)
+    
           console.log("Buy token ======>>>>>>>>",buyTokenAddress)
 
   };
@@ -47,45 +63,149 @@ export default function SignExample() {
   {
    // console.log("buyTokenData",JSON.parse(sellTokenData).symbol)
     setSellTokenAddress( JSON.parse( sellTokenData ).address );
+    setSellToken( JSON.parse( sellTokenData ).symbol )
+    setSellTokenImg(JSON.parse( sellTokenData ).logoURI)
           console.log("Sell token ======>>>>>>>>",sellTokenAddress)
 
   };
 
-const [tokens, setTokens] = useState([])
- async  function getQuote ()
+  const [ tokens, setTokens ] = useState( [] )
+  
+  async function getPrice(){
+    console.log("Getting Price");
+  
+    // if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value) return;
+    let amount = Number((sellAmount) * 10 ** 18);
+  
+    const params = {
+        sellToken: sellTokenAddress,
+        buyToken: buyTokenAddress,
+        sellAmount: amount,
+    }
+  
+    const headers =
+    
+    {
+        '0x-api-key' :  ' e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e'
+    } 
+
+    // Fetch the swap price.
+    const response = await fetch( `https://api.0x.org/swap/v1/price?${ qs.stringify( params ) }`, { headers } );
+            
+    swapPriceJSON = await response.json();
+    console.log("PriceJSON: ===========>>>>>>>>", swapPriceJSON);
+    
+    setToAmount( swapPriceJSON.buyAmount / (10 ** 18))
+    setEstimatedGas( swapPriceJSON.estimatedGas )
+    // setPrice( swapPriceJSON.price )
+      //  console.log( "from get pprice price=============>>>>>>>>>>>>>", price );
+
+}
+ async  function getQuote (account)
   {
     
- const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-  const accounts = await provider.listAccounts();
-   console.log( accounts[ 0 ] );
-   
-const qs = require('qs');
+   console.log("getquote for account =====>>>>>>>",account)
 
 const params = {
     // Not all token symbols are supported. The address of the token can be used instead.
     sellToken: sellTokenAddress,
     buyToken: buyTokenAddress,
     // Note that the DAI token uses 18 decimal places, so `sellAmount` is `100 * 10^18`.
-  sellAmount: ( sellAmount * 10 ** 18 ),
-   // takerAddress:accounts[0],
-};
+    sellAmount: ( sellAmount * 10 ** 18 ),
+    takerAddress: account,
+   };
+   
 
- const headers : string = '0x-api-key: e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e'; // This is a placeholder. Get your live API key from the 0x Dashboard (https://dashboard.0x.org/apps)
-// --header '0x-api-key: e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e
-   const url = `https://api.0x.org/swap/v1/quote?${qs.stringify(params)}`
-const response = await fetch(
-    url//, { headers : String }
-); // Using the global fetch() method. Learn more https://developer.mozilla.org/en-US/docs/Web/API/fetch
-console.log("ResponseURL =============>>>>>>>>>>>>>",url);
+    const headers =
+    
+    {
+        '0x-api-key' :  ' e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e'
+    } 
 
-console.log("Response =============>>>>>>>>>>>>>",await response.json());
+    // Fetch the swap price.
+    const response = await fetch( `https://api.0x.org/swap/v1/price?${ qs.stringify( params ) }`, { headers } );
+       
+
+// console.log("Response =============>>>>>>>>>>>>>",await response.json());
+
+   swapQuoteJSON = await response.json();
+   console.log("swapquotejson with probleme 1 =========>>>>>>>>>>>>>>>>>>",swapQuoteJSON)
+   setToAmount ( (swapQuoteJSON.buyAmount / (10 ** 18)))
+   setEstimatedGas( swapQuoteJSON.estimatedGas )
+  //  setPrice(swapQuoteJSON.price)
+   
+   
+   console.log( "To Amount get quote=============>>>>>>>>>>>>>", toAmount );
+  //  console.log( "price get quote=============>>>>>>>>>>>>>", price );
+      console.log("swapQuoteJSON get quote with probleme =============>>>>>>>>>>>>>",swapQuoteJSON);
+
+
+   return swapQuoteJSON
+   
+
   }
 
+async function trySwap(){
+    const erc20abi= [{ "inputs": [ { "internalType": "string", "name": "name", "type": "string" }, { "internalType": "string", "name": "symbol", "type": "string" }, { "internalType": "uint256", "name": "max_supply", "type": "uint256" } ], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Transfer", "type": "event" }, { "inputs": [ { "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" } ], "name": "allowance", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "approve", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" } ], "name": "balanceOf", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burnFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "decimals", "outputs": [ { "internalType": "uint8", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" } ], "name": "decreaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" } ], "name": "increaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "totalSupply", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transfer", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transferFrom", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }]
+    console.log("trying swap");
+  try   
+  {
+    // Only work if MetaMask is connect
+    // Connecting to Ethereum: Metamask
+    const web3 = new Web3( Web3.givenProvider );
+  
+    // The address, if any, of the most recently used account that the caller is permitted to access
+    let accounts = await ethereum.request( { method: "eth_accounts" } );
+    let takerAddress = accounts[ 0 ];
+    console.log( "takerAddress: ", takerAddress );
+  
+    const swapQuoteJSON = await getQuote( takerAddress );
+  
+    // Set Token Allowance
+    // Set up approval amount
+    const fromTokenAddress = sellTokenAddress;
+    const maxApproval = new BigNumber( 2 ).pow( 256 ).minus( 1 );
+    console.log( "approval amount: ", maxApproval );
+    const ERC20TokenContract = new web3.eth.Contract( erc20abi, fromTokenAddress );
+    console.log( "setup ERC20TokenContract: ", ERC20TokenContract );
+    console.log( "swapQuoteJSON ===============>>>>>>>>>> ", swapQuoteJSON );
+    console.log( "swapQuoteJSON  allowanceTarget: ===============>>>>>>>>>> ", swapQuoteJSON.allowanceTarget );
+
+    // Grant the allowance target an allowance to spend our tokens.
+    web3.eth.defaultAccount = takerAddress
+
+    const tx = await ERC20TokenContract.methods.approve(
+      swapQuoteJSON.allowanceTarget,
+      maxApproval,
+    )
+      
+      .send({ from: takerAddress })
+
+      .then( tx =>
+      {
+        console.log( "tx:=======>>>>>>>>> ", tx )
+      } );
+      // Perform the swap
+    console.log( "from address: 0.782 ETH ========>>>>>>>> ", { from: takerAddress } );
+    
+
+    const receipt = await web3.eth.sendTransaction(swapQuoteJSON);
+    console.log("receipt: ========>>>>>>>> ", receipt);
+  }
+  catch ( Error )   
+    {  
+      alert(Error.message);  
+    }
+
+  
+}
+
    useEffect(() => {
-      getQuote()
+     // getQuote()
+     getPrice()
      
-   }, [] )
+   }, [toAmount,estimatedGas] )
   
   
   if ( isConnected )
@@ -109,7 +229,7 @@ console.log("Response =============>>>>>>>>>>>>>",await response.json());
                                 {/* Sell recive Card */}
                                 <Card variant = "outline">
                       <CardBody borderRadius='lg'>
-                        <Button onClick={getQuote}>GO</Button>
+        
                                           <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
                                            
                                               <Select iconColor="pink.500" icon={ <FaDrawPolygon /> } placeholder='Polygon' >
@@ -134,13 +254,13 @@ console.log("Response =============>>>>>>>>>>>>>",await response.json());
                  
                   <Stack direction='column'  >
                                      
-                              <p>Data from child component: {buyTokenAddress}</p>
+                              {/* <p>Data from child component: {buyTokenAddress}</p> */}
                               
 
-                   <SearchModal getTokenAddressData={handleBuyFromSearchModel}  status={"You Sell"}></SearchModal>
+                   <SearchModal getTokenAddressData={handleSellFromSearchModel}  status={"You Sell"}></SearchModal>
 
                 
-                     <Input onBlur={e=> setSellamount(Number(e.target.value))} style={{  textAlign:"center"}} placeholder="0"></Input>
+                     <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} style={{  textAlign:"center"}} placeholder="0"></Input>
                     
                     </Stack>                                                                                                                                                                                                                        
                         <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
@@ -148,11 +268,19 @@ console.log("Response =============>>>>>>>>>>>>>",await response.json());
 
                 
                               <Text  fontSize='sm'>
-                              $0.00
+                              Amount :{toAmount}
                               </Text>
                     
                         </Stack>
-                        
+                         <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                                     
+
+                
+                              <Text  fontSize='sm'>
+                             Estimated Gas: {estimatedGas}
+                              </Text>
+                    
+                        </Stack>
                 </CardBody> 
                         </Card>
                         
@@ -175,12 +303,12 @@ console.log("Response =============>>>>>>>>>>>>>",await response.json());
                  
                   <Stack direction='column'  >
                                      
-                                                  <p>Data from child component: { sellTokenAddress }</p>
+                                                  {/* <p>Data from child component: { sellTokenAddress }</p> */}
                                                                              
-                   <SearchModal getTokenAddressData={handleSellFromSearchModel} status={"You Receive"} ></SearchModal>
+                   <SearchModal getTokenAddressData={handleBuyFromSearchModel} status={"You Receive"} ></SearchModal>
 
                 
-                              <Input>
+                              <Input value={toAmount} onChange={getPrice}>
                               </Input>
                     
                   </Stack>
@@ -230,7 +358,9 @@ console.log("Response =============>>>>>>>>>>>>>",await response.json());
                                     <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
                                     
                                     
-                                     <DurationModal></DurationModal>
+                                     <Button onClick={trySwap}  width={'100%'} colorScheme='pink' variant='solid'>
+                                            Swap
+                                        </Button> 
                                     </Stack>
                                   
                                   </CardBody> 
@@ -252,8 +382,9 @@ console.log("Response =============>>>>>>>>>>>>>",await response.json());
                                           <Card  m={"12px"} minW={"lg"} minH={"xs"} width={"100%"} >
                                             <CardBody   borderRadius='lg'>
                                                         
-                                    
-                                                  
+                                    <Button colorScheme="pink" borderRadius={"100%"} h={50} w={50} onClick={getPrice} > <MdRefresh size={"30px"} ></MdRefresh></Button>
+  
+                      
                                                           
                                                           <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
 
@@ -311,10 +442,10 @@ Supporting:</Text>
             <Stack mt={6} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
                            
                             <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
-                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src="https://cdn.furucombo.app/assets/img/token/1INCH.svg"
+                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src={sellTokenImg}
                               ></img>
                                   <Stack direction='column'>
-                                        <Heading size='md'>1 Matic</Heading>
+                                <Heading size='md'>{ sellToken } { sellAmount }</Heading>
                                          
                                         <Text pt={-5} size='xs'>$0.98</Text>
                               </Stack>     
@@ -343,10 +474,10 @@ Supporting:</Text>
                                 &rarr;
                             </Heading> 
                             <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
-                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src="https://cdn.furucombo.app/assets/img/token/1INCH.svg"
+                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src={buyTokenImg}
                               ></img>
                                   <Stack direction='column'>
-                                        <Heading size='md'>14.1 TUT</Heading>
+                                <Heading size='md'>{ toAmount } { buyToken}</Heading>
                                          
                                         <Text pt={-5} size='xs'>$0.98 (-0.40% )</Text>
                                  </Stack>          

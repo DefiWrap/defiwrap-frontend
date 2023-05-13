@@ -8,6 +8,7 @@ import {
   createMultiStyleConfigHelpers,
 } from '@chakra-ui/styled-system'
 import { listAnatomy as parts } from '@chakra-ui/anatomy'
+import { error } from "console";
 //  import data from './data.json';
 
 
@@ -32,33 +33,6 @@ const sizes = {
 }
 
 
-let currentTrade = {};
-let currentSelectSide;
-
-// async function getPrice(){
-//     console.log("Getting Price");
-  
-//     // if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value) return;
-//     let amount = Number(0.005 * 10 ** 0.004);
-  
-//     const params = {
-//         sellToken: currentTrade.from.address,
-//         buyToken: currentTrade.to.address,
-//         sellAmount: amount,
-//     }
-
-//     const headers = 'e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e'; // 1de2d124-1e69-41a7-9c1e-7ce3f16c25bf This is a placeholder. Get your live API key from the 0x Dashboard (https://dashboard.0x.org/apps)
-  
-//     // Fetch the swap price.
-//     const response = await fetch(`https://api.0x.org/swap/v1/price?${qs.stringify(params)}`, { headers });
-    
-//     swapPriceJSON = await response.json();
-//     console.log("Price: ", swapPriceJSON);
-    
-//     document.getElementById("to_amount").value = swapPriceJSON.buyAmount / (10 ** currentTrade.to.decimals);
-//     document.getElementById("gas_estimate").innerHTML = swapPriceJSON.estimatedGas;
-// }
-
 export function SearchModal ({ status , getTokenAddressData  })
 {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -68,27 +42,7 @@ export function SearchModal ({ status , getTokenAddressData  })
 
 
  
-  
-
-  // const fetchData = async () => {
-  //   fetch("https://tokens.coingecko.com/uniswap/all.json")
-  //     .then(response => {
-  //       return  response.json()
-  //     })
-  //     .then(data => {
-  //       setTokens( data )
-       
-        
-  //     })
-  // }
-
-  //  useEffect(() => {
-  //    fetchData()
-  //           console.log("data ========>>>>>>",tokens)
-
-     
-  //  }, [] )
-    const [tokens, setTokens] = useState([])
+  const [tokens, setTokens] = useState([])
 
   
 
@@ -138,16 +92,23 @@ export function SearchModal ({ status , getTokenAddressData  })
   }
   function listViewClick ( e: any )
   {
-    const tokenAddress = e.target.id ;
-              setTokenQry(tokenAddress);
-              const tokenDetails = tokens.tokens.filter(item =>
-                item.address.toLowerCase().includes(tokenAddress.toLowerCase())
-              );
-             setToToken(tokenDetails);
-            console.log("new result ==================>>>>>>>>>>>>>>", tokenDetails)
-        getTokenAddressData(JSON.stringify(tokenDetails[0]));
+
+    try
+    {
+      const tokenAddress = e.target.id;
+      setTokenQry( tokenAddress );
+      const tokenDetails = tokens.tokens.filter( item =>
+        item.address.toLowerCase().includes( tokenAddress.toLowerCase() )
+      );
+      setToToken( tokenDetails );
+      console.log( "new result ==================>>>>>>>>>>>>>>", tokenDetails )
+      getTokenAddressData( JSON.stringify( tokenDetails[ 0 ] ) );
           
-           onClose()
+      onClose()
+    }
+    catch (error){
+      console.warn(error)
+    }
 
   }
   
