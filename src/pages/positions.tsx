@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+// @ts-ignore
 import * as React from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
@@ -8,7 +9,7 @@ import { useState } from "react";
 import { verifyMessage } from "ethers/lib/utils";
 import { SignMessageArgs } from "@wagmi/core";
 import { NextSeo } from "next-seo";
-import { Eth, Matic } from "@chakra-icons/cryptocurrency-icons";
+import { Bnb, Eth } from "@chakra-icons/cryptocurrency-icons";
 import { FaArrowRight } from "react-icons/fa";
 import { DurationModal } from "../components/DurationModal";
 
@@ -53,7 +54,7 @@ export default function SignExample() {
                       ●
                   </Text> 
                   <Text ml={5} size='sm'>
-                    Matic
+                    BNB
                   </Text> 
                   <Box ml={5} w={"100%"}>
                     <Progress borderRadius={50}  colorScheme='red' size='sm' value={100} />
@@ -128,9 +129,9 @@ export default function SignExample() {
                                                   </Eth>
                                                   <Heading size='sm'>Eth</Heading>
                                                   <FaArrowRight></FaArrowRight>
-                                                  <Matic h={ 7 } w={ 7 }>
-                                                  </Matic>
-                                                  <Heading size='sm'>Matic</Heading>
+                                                  <Bnb h={ 7 } w={ 7 } />
+                                                
+                                                  <Heading size='sm'>BNB</Heading>
                                                 </Stack>
                                       
                                       <Heading   pr={ 1 } size='sm'>2 Days Left</Heading>
@@ -139,7 +140,7 @@ export default function SignExample() {
                                   </CardBody> 
                                 </Card>
 
-                                {/*Eth to matic card */}
+                                {/*Eth to BNB card */}
                                   <Card variant = "outline" mt={2}>
                                     <CardBody borderRadius='lg'>
                                       <Stack mt={2} direction='row' alignItems={"center"}>
@@ -169,7 +170,7 @@ export default function SignExample() {
                                             To withdrow :
                                           </Text>
                                                   
-                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Matic h={ 4 } w={ 4 }> </Matic>} variant='outline'>
+                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Bnb h={ 4 } w={ 4 }> </Bnb>} variant='outline'>
                                                     0 
                                                 </Button>
 
@@ -226,11 +227,11 @@ export default function SignExample() {
 
 
                         </Box>
-                        <Box className={styles.innerbox} borderRadius='lg' >
+                        {/* <Box className={styles.innerbox} borderRadius='lg' >
                               <Heading mb='8px' size='xl'>
                                 No open positions yet.
                               </Heading>  
-                        </Box>
+                        </Box> */}
                     </TabPanel>
                     <TabPanel>
                       <Box className={styles.innerbox} borderRadius='lg' >

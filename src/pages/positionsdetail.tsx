@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+// @ts-ignore
 import * as React from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
@@ -8,7 +9,7 @@ import { useState } from "react";
 import { verifyMessage } from "ethers/lib/utils";
 import { SignMessageArgs } from "@wagmi/core";
 import { NextSeo } from "next-seo";
-import { Eth, Matic } from "@chakra-icons/cryptocurrency-icons";
+import { Eth, Bnb } from "@chakra-icons/cryptocurrency-icons";
 import { FaArrowRight, FaChartLine } from "react-icons/fa";
 import { DurationModal } from "../components/DurationModal";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -67,9 +68,9 @@ export default function SignExample() {
                                                   </Eth>
                                                   <Heading size='sm'>Eth</Heading>
                                                   <FaArrowRight></FaArrowRight>
-                                                  <Matic h={ 7 } w={ 7 }>
-                                                  </Matic>
-                                                  <Heading size='sm'>Matic</Heading>
+                                                  <Bnb h={ 7 } w={ 7 }>
+                                                  </Bnb>
+                                                  <Heading size='sm'>BNB</Heading>
                                                 </Stack>
                                       
                                     </Stack>
@@ -78,7 +79,7 @@ export default function SignExample() {
                                   </CardBody> 
                                 </Card>
 
-                                {/*Eth to matic card */}
+                                {/*Eth to bnb card */}
                                   <Card variant = "outline">
                                     <CardBody borderRadius='lg'>
                                       <Stack direction='row' alignItems={"center"}>
@@ -107,7 +108,7 @@ export default function SignExample() {
                                             Swaped :
                                           </Text>
                                                   
-                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Matic h={ 4 } w={ 4 }> </Matic>} variant='outline'>
+                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Bnb h={ 4 } w={ 4 }> </Bnb>} variant='outline'>
                                                      0 
                                                 </Button>
                                             
@@ -117,7 +118,7 @@ export default function SignExample() {
                                             To withdrow :
                                           </Text>
                                                   
-                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Matic h={ 4 } w={ 4 }> </Matic>} variant='outline'>
+                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Bnb h={ 4 } w={ 4 }> </Bnb>} variant='outline'>
                                                     0 
                                                 </Button>
 
@@ -145,7 +146,7 @@ export default function SignExample() {
                                             Remaining :
                                           </Text>
                                                   
-                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Matic h={ 4 } w={ 4 }> </Matic>} variant='outline'>
+                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Bnb h={ 4 } w={ 4 }> </Bnb>} variant='outline'>
                                                      <b>0.001</b>  (1.03USD)
                                                 </Button>
 
@@ -157,7 +158,7 @@ export default function SignExample() {
                                             To withdrow :
                                           </Text>
                                                   
-                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Matic h={ 4 } w={ 4 }> </Matic>} variant='outline'>
+                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Bnb h={ 4 } w={ 4 }> </Bnb>} variant='outline'>
                                                      0
                                                 </Button>
 

@@ -47,17 +47,17 @@ export function DurationModal ()
 
 
   // Define a function to render the search result on the page
-const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+// const [query, setQuery] = useState('');
+//   const [results, setResults] = useState([]);
 
-  function handleChange(event : any) {
-    const newQuery = event.target.value;
-    setQuery(newQuery);
-    const newResults = data.filter(item =>
-      item.name.toLowerCase().includes(newQuery.toLowerCase())
-    );
-    setResults(newResults);
-  }
+//   function handleChange(event : any) {
+//     const newQuery = event.target.value;
+//     setQuery(newQuery);
+//     const newResults = data.filter(item =>
+//       item.name.toLowerCase().includes(newQuery.toLowerCase())
+//     );
+//     setResults(newResults);
+//   }
   
 
 
@@ -100,7 +100,7 @@ const [query, setQuery] = useState('');
                       <InputGroup>
                         <InputLeftElement
                           pointerEvents='none'
-                          children={[<FaEthereum color='#D53F8C' h={ 10 } w={ 10} />]}
+                          children={[<FaEthereum color='#D53F8C' height={ 10 } width={ 10} />]}
                         />
                       <Input       focusBorderColor='pink.400'
                             errorBorderColor='red.300'
@@ -156,7 +156,7 @@ const [query, setQuery] = useState('');
                       <InputGroup>
                           <InputLeftElement
                             pointerEvents='none'
-                            children={ [<FaEthereum color='#D53F8C' h={ 10 } w={ 10} />]}
+                            children={ [<FaEthereum color='#D53F8C' height={ 10 } width={ 10} />]}
                       />
                       
                           <Input w={"120px"}  focusBorderColor='pink.400'

@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+// @ts-ignore
 import * as React from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Checkbox } from '@chakra-ui/react'
@@ -8,7 +9,7 @@ import { useState,useEffect } from "react";
 import { verifyMessage } from "ethers/lib/utils";
 import { SignMessageArgs } from "@wagmi/core";
 import { NextSeo } from "next-seo";
-import { Eth, Matic } from "@chakra-icons/cryptocurrency-icons";
+import { Bnb, Eth, I1inch, Matic } from "@chakra-icons/cryptocurrency-icons";
 import { FaArrowDown, FaArrowRight, FaChartLine, FaDeploydog, FaDrawPolygon, FaEthereum, FaGasPump, FaQuestionCircle, FaRecycle, FaRegCircle } from "react-icons/fa";
 import { DurationModal } from "../components/DurationModal";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -173,7 +174,7 @@ async function trySwap(){
     console.log( "swapQuoteJSON  allowanceTarget: ===============>>>>>>>>>> ", swapQuoteJSON.allowanceTarget );
 
     // Grant the allowance target an allowance to spend our tokens.
-    web3.eth.defaultAccount = takerAddress
+    //web3.eth.defaultAccount = fromTokenAddress
 
     const tx = await ERC20TokenContract.methods.approve(
       swapQuoteJSON.allowanceTarget,
@@ -232,10 +233,9 @@ async function trySwap(){
         
                                           <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
                                            
-                                              <Select iconColor="pink.500" icon={ <FaDrawPolygon /> } placeholder='Polygon' >
-                                                <option value='option1'>Option 1</option>
-                                                <option value='option2'>Option 2</option>
-                                                <option value='option3'>Option 3</option>
+                                              <Select iconColor="pink.500" icon={ <Bnb /> } placeholder='Select Network' >
+                                                <option value='option1'>BNB Chain</option>
+                                              
                                               </Select>
                                           </Stack>
                                   </CardBody> 
@@ -459,8 +459,8 @@ Supporting:</Text>
                       
                               <Stack direction='row' width={ "100%" } alignItems={ "center" }>
                              
-                                         <Button borderRadius={50} size={"sm"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} >
-                                                                  <b>KyberSwap</b>
+                                         <Button borderRadius={50} size={"sm"} colorScheme="pink" leftIcon={<I1inch h={ 4 } w={ 4 }> </I1inch>} >
+                                                                  <b>1 Inch</b>
                                   </Button>
                             
                               

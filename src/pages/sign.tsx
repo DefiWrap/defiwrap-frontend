@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+// @ts-ignore
 import * as React from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import {

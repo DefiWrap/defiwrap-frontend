@@ -129,8 +129,8 @@ const DesktopNav = () => {
                   bg: linkHoverBackgroundColor,
                 }}
               >
-                <Text as="sm">
-                  <Text as="b">{navItem.label}</Text>
+                <Text size="sm">
+                  <Text size="b">{navItem.label}</Text>
                 </Text>
               </Link>
             </PopoverTrigger>
