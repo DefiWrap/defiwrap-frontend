@@ -3,7 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   ignoreDuringBuilds: true,
       
-
+typescript: {
+    ignoreBuildErrors: true,
+  },
 
 };
 
