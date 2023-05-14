@@ -2,21 +2,26 @@
     "name": "Binance Coin",
     "symbol": "BNB",
     "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "logoURI": "https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg",
     "decimals": 18
 }, {
     "name": "Wrapped BNB",
     "symbol": "WBNB",
     "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "logoURI": "https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg",
     "decimals": 18
 }, {
     "name": "Ethereum Token",
     "symbol": "ETH",
     "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+    "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg",
     "decimals": 18
 }, {
     "name": "USD Coin",
     "symbol": "USDC",
     "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+          "logoURI": "https://ecoswap.exchange/tokens/0x38/USDC-0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.svg",
+
     "decimals": 18
 }, {
     "name": "Dai Token",

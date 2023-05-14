@@ -10,6 +10,8 @@ import {
 import { listAnatomy as parts } from '@chakra-ui/anatomy'
 import { error } from "console";
 //  import data from './data.json';
+import tokenlist from "../../data/tokens/0x38.json"
+
 
 
       
@@ -33,7 +35,7 @@ const sizes = {
 }
 
 
-export function SearchModal ({  getTokenAddressData  })
+export function SearchTokenModal ({ status , getTokenAddressData  })
 {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -49,7 +51,7 @@ export function SearchModal ({  getTokenAddressData  })
   useEffect(() => {
     const dataFetch = async () => {
   try {
-    const response = await fetch("https://tokens.coingecko.com/uniswap/all.json");
+    const response = await fetch(tokenlist);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -69,20 +71,26 @@ export function SearchModal ({  getTokenAddressData  })
  
   // Define a function to render the search result on the page
   const [query, setQuery] = useState('');
-  const [ results, setResults ] = useState(tokens);
+  const [ results, setResults ] = useState(tokenlist);
 
   const [tokenQry, setTokenQry]=useState('')
-  const [ToToken, setToToken] = useState([{"chainId":1,"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"WETH","symbol":"WETH","decimals":18,"logoURI":"https://assets.coingecko.com/coins/images/2518/thumb/weth.png?1628852295"}]);
+  const [ToToken, setToToken] = useState([{
+    "name": "Binance Coin",
+    "symbol": "BNB",
+    "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "logoURI": "https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg",
+    "decimals": 18
+}]);
     
   // setToToken( tokens )
 
   function handleChange ( event: any )
       {
-        
+        console.log("token list ========>>>>>>",tokenlist)
         
         const newQuery = event.target.value;
         setQuery(newQuery);
-        const newResults = tokens.tokens.filter(item =>
+        const newResults = tokenlist.filter(item =>
           item.name.toLowerCase().includes( newQuery.toLowerCase() )
           //  &&
           //  item.chainId== 1
@@ -97,7 +105,7 @@ export function SearchModal ({  getTokenAddressData  })
     {
       const tokenAddress = e.target.id;
       setTokenQry( tokenAddress );
-      const tokenDetails = tokens.tokens.filter( item =>
+      const tokenDetails = tokenlist.filter( item =>
         item.address.toLowerCase().includes( tokenAddress.toLowerCase() )
       );
       setToToken( tokenDetails );
@@ -157,7 +165,7 @@ export function SearchModal ({  getTokenAddressData  })
       >
         <ModalOverlay />
         <ModalContent  w={600} >
-          <ModalHeader>You Pay</ModalHeader>
+          <ModalHeader>{ status }</ModalHeader>
           <ModalCloseButton />
                   <ModalBody  pb={ 6 }>
                     

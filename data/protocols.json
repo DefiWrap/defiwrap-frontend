@@ -1,0 +1,16 @@
+[{
+    "name": "Uniswap",
+    "id": "uniswap",
+    "logoURI": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Uniswap_Logo.svg",
+    "website": "https://uniswap.org/"
+},{
+    "name": "Velvet Capital",
+    "id": "velvetcapital",
+    "logoURI": "https://media.licdn.com/dms/image/C560BAQGiTLP8sM6P_g/company-logo_200_200/0/1644600883731?e=1692230400&v=beta&t=Zkw2wKMbOozx3iQ6RqpV_Rc0Fcbvz7J2n9JLv3N_qT8",
+    "website": "https://velvet.capital/"
+},{
+    "name": "Beefy",
+    "id": "beefy",
+    "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/7311.png",
+    "website": "https://beefy.com/"
+}]

@@ -8,6 +8,13 @@ import { useRouter } from "next/router";
 import { Head } from "../components/layout/Head";
 import SEO from "../components/SEO";
 
+// //particle code
+// import { ModalProvider, Ethereum, EthereumGoerli, evmWallets } from '@particle-network/connect-react-ui';
+// import { WalletEntryPosition } from '@particle-network/auth';
+// import { Ethereum, EthereumGoerli } from '@particle-network/common';  
+
+// const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted();
   const router = useRouter();
