@@ -114,7 +114,7 @@ const client = createClient({
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProvider modalSize="compact" theme={myTheme} coolMode chains={chains}>
+      <RainbowKitProvider modalSize="compact" initialChain={56} theme={myTheme} coolMode chains={chains}>
         { props.children }
       </RainbowKitProvider>
     </WagmiConfig>
