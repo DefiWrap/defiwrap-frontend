@@ -241,7 +241,7 @@ protocolsFetch()
         <Steps visibility={"hidden"} ml="-10px" colorScheme="pink" activeStep={activeStep}>
 
           <Step key="Step 1">
-              <Box sx={{  rounded: "md" }}>
+            <Box sx={{  rounded: "md" }}>
               <div>
                       {/* Select Network Card */}
                       <Card variant = "outline">
@@ -488,7 +488,7 @@ protocolsFetch()
       </CardBody>
     </Card>
       
-           </Step>
+          </Step>
 
       </Steps>
                                

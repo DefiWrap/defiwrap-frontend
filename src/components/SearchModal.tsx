@@ -95,6 +95,7 @@ export function SearchModal ({  getTokenAddressData  })
 
     try
     {
+      
       const tokenAddress = e.target.id;
       setTokenQry( tokenAddress );
       const tokenDetails = tokens.tokens.filter( item =>
@@ -188,10 +189,10 @@ export function SearchModal ({  getTokenAddressData  })
               { results.map( item => (
   
                 <ListItem  >
-                  <div onClick={listViewClick} style={{display:"flex"}} >
-                    <img style={ { marginRight: "7px" } } height={ 25 } width={ 25 } src={ item.logoURI }
+                  <div  style={{display:"flex"}} >
+                    <img onClick={listViewClick} style={ { marginRight: "7px" } } height={ 25 } width={ 25 } src={ item.logoURI }
                     ></img>
-                    <b style={{cursor:"pointer"}}  id={item.address} >{ item.name }</b> 
+                    <b onClick={listViewClick} style={{cursor:"pointer"}}  id={item.address} >{ item.name }</b> 
                     &nbsp;
                     <FaCopy color="pink.500" style={{cursor:"pointer"}} onClick={() => {navigator.clipboard.writeText(item.address)}}></FaCopy>
                    </div>
