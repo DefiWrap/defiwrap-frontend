@@ -1,46 +1,72 @@
-[{
-    "name": "Binance Coin",
-    "symbol": "BNB",
-    "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    "logoURI": "https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg",
+[
+  {
+    "name": "Binance-Peg Ethereum Token",
+    "symbol": "BPET",
+    "address": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+    "logoURI": "https://bscscan.com/token/images/ethereum_32.png",
     "decimals": 18
-}, {
+  },
+  {
+    "name": "Binance-Peg BSC-USD",
+    "symbol": "BP-BSC-USD",
+    "address": "0x55d398326f99059ff775485246999027b3197955",
+    "logoURI": "https://bscscan.com/token/images/busdt_32.png",
+    "decimals": 18
+  },
+  {
     "name": "Wrapped BNB",
     "symbol": "WBNB",
     "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-    "logoURI": "https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg",
+    "logoURI": "https://bscscan.com/token/images/binance_32.png",
     "decimals": 18
-}, {
-    "name": "Ethereum Token",
-    "symbol": "ETH",
-    "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
-    "logoURI": "https://ethereum-optimism.github.io/data/ETH/logo.svg",
+  },
+  {
+    "name": "Binance-Peg USD Coin",
+    "symbol": "BP-USD",
+    "address": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    "logoURI": "https://bscscan.com/token/images/centre-usdc_28.png",
     "decimals": 18
-}, {
-    "name": "USD Coin",
+  },
+  {
+    "name": "USDC",
     "symbol": "USDC",
-    "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
-          "logoURI": "https://ecoswap.exchange/tokens/0x38/USDC-0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.svg",
-
+    "address": "0x8965349fb649a33a30cbfda057d8ec2c48abe2a2",
+    "logoURI": "https://bscscan.com/token/images/usdcgno_32.png",
     "decimals": 18
-}, {
-    "name": "Dai Token",
-    "symbol": "DAI",
-    "address": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+  },
+  {
+    "name": "Binance-Peg XRP Token",
+    "symbol": "BP-XRP",
+    "address": "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
+    "logoURI": "https://bscscan.com/token/images/xrp_32.png",
     "decimals": 18
-}, {
-    "name": "Binance-Peg BSC-USD",
-    "symbol": "BSC-USD",
-    "address": "0x55d398326f99059fF775485246999027B3197955",
+  },
+  {
+    "name": "Binance-Peg Cardano Token",
+    "symbol": "BPC",
+    "address": "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
+    "logoURI": "https://bscscan.com/token/images/cardano_32.png",
     "decimals": 18
-}, {
-    "name": "BUSD Token",
-    "symbol": "BUSD",
-    "address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+  },
+  {
+    "name": "Binance-Peg Dogecoin Token",
+    "symbol": "BPD",
+    "address": "0xba2ae424d960c26247dd6c32edc70b295c744c43",
+    "logoURI": "https://bscscan.com/token/images/dogecoin_32.png",
+    "decimals": 8
+  },
+  {
+    "name": "Matic Token",
+    "symbol": "MT",
+    "address": "0xcc42724c6683b7e57334c4e856f4c9965ed682bd",
+    "logoURI": "https://bscscan.com/token/images/polygonmatic_new_32.png",
     "decimals": 18
-}, {
-    "name": "BTCB Token",
-    "symbol": "BTCB",
-    "address": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+  },
+  {
+    "name": "Binance-Peg Litecoin Token",
+    "symbol": "BPLT",
+    "address": "0x4338665cbb7b2485a8855a139b75d5e34ab0db94",
+    "logoURI": "https://bscscan.com/token/images/litecoin_32.png",
     "decimals": 18
-}]
+  }
+]
