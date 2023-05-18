@@ -24,6 +24,7 @@ export const txt = {
   create_position: "Create Position",
   defiWrap: "DefiWrap",
   defiLlama: "DefiLlama",
+  select_option: "Select option",
 
   //   searchModal.tsx
   select: "Select",
@@ -31,3 +32,9 @@ export const txt = {
   cancel: "Cancel",
   you_pay: "You Pay",
 };
+
+export const timeArray = [
+  { id: 1, name: "Day" },
+  { id: 2, name: "Week" },
+  { id: 3, name: "Month" },
+];

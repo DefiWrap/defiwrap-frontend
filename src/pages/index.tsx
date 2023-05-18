@@ -74,15 +74,9 @@ import {
 import { useForm } from "react-hook-form";
 import { DateTime } from "luxon";
 import { ApiService } from "../apiService/api";
-import { txt } from "../utils/constant";
+import { timeArray, txt } from "../utils/constant";
 
 const steps = [{ label: "Step 1" }, { label: "Step 2" }];
-
-const time = [
-  { id: 1, name: "Day" },
-  { id: 2, name: "Week" },
-  { id: 3, name: "Month" },
-];
 
 const Home: NextPage = () => {
   // validations
@@ -179,7 +173,7 @@ const Home: NextPage = () => {
     setBuyToken(JSON.parse(buyTokenData).symbol);
     setbuyTokenImg(JSON.parse(buyTokenData).logoURI);
   };
-  const [activeChartTime, setActiveChartTime] = useState(time[0].id);
+  const [activeChartTime, setActiveChartTime] = useState(timeArray[0].id);
 
   useEffect(() => {
     let value =
@@ -257,7 +251,7 @@ const Home: NextPage = () => {
                                     <img src="https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg"></img>
                                   }
                                   focusBorderColor="pink.400"
-                                  placeholder="Select option"
+                                  placeholder={txt.select_option}
                                   {...register("name", {
                                     required: "Please select the network",
                                   })}
@@ -295,7 +289,7 @@ const Home: NextPage = () => {
                                     <img src="https://icon-library.com/images/swap-icon-png/swap-icon-png-16.jpg"></img>
                                   }
                                   focusBorderColor="pink.400"
-                                  placeholder="Select option"
+                                  placeholder={txt.select_option}
                                   {...register("protocol", {
                                     required: "Please select the protocol",
                                   })}
@@ -649,7 +643,7 @@ const Home: NextPage = () => {
                     borderRadius: 20,
                   }}
                 >
-                  {time.map((item) => {
+                  {timeArray.map((item) => {
                     return (
                       <Button
                         onClick={() => setActiveChartTime(item.id)}
