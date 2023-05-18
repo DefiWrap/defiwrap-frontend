@@ -73,81 +73,21 @@ import {
 
 import { useForm } from "react-hook-form";
 import { DateTime } from "luxon";
+import { ApiService } from "../apiService/api";
+import { timeArray, txt } from "../utils/constant";
 
 const steps = [{ label: "Step 1" }, { label: "Step 2" }];
-
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
-const time = [
-  { id: 1, name: "Day" },
-  { id: 2, name: "Week" },
-  { id: 3, name: "Month" },
-];
-// const endpoint = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30';
-
-// const fetchData = async () =>
-// {
-
-//   const response = await axios.get(endpoint);
-//   const prices = response.data.market_data.sparkline_7d.price;
-//   const data = Array.from({ length: prices.length }, (_, i) => ({
-//     name: '',
-//     price: prices[i],
-//   }));
-//   setChartData(data);
-// };
 
 const Home: NextPage = () => {
   // validations
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm();
 
   function onSubmit(values: any) {
+    console.log("values :>> ", values);
     return new Promise((resolve) => {
       alert(values);
     });
@@ -159,7 +99,7 @@ const Home: NextPage = () => {
   const isLastStep = activeStep === steps.length - 1;
   const hasCompletedAllSteps = activeStep === steps.length;
 
-  const chart = (interval: string | number) => (
+  const chart = (interval: any) => (
     <ResponsiveContainer height={500} width={800}>
       <LineChart data={chartData} margin={{ right: 15, top: 10 }}>
         <CartesianGrid stroke="#" />
@@ -233,7 +173,7 @@ const Home: NextPage = () => {
     setBuyToken(JSON.parse(buyTokenData).symbol);
     setbuyTokenImg(JSON.parse(buyTokenData).logoURI);
   };
-  const [activeChartTime, setActiveChartTime] = useState(time[0].id);
+  const [activeChartTime, setActiveChartTime] = useState(timeArray[0].id);
 
   useEffect(() => {
     let value =
@@ -251,30 +191,29 @@ const Home: NextPage = () => {
 
   const tokenListFetch = async (value: String) => {
     try {
-      let apiUrl = `https://coins.llama.fi/chart/bsc:${sellTokenAddress},bsc:${buyTokenAddress}?${value}&end=1684300652.071`;
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      if (data) {
-        let mainData = [];
-        await data.coins[`bsc:${sellTokenAddress}`].prices.map(
-          (item, index) => {
-            const date = DateTime.fromSeconds(
-              parseInt(item.timestamp, 10)
-            ).toFormat(value == "period=1h&span=24" ? "t" : "MMM d ");
-            let itemdata = {
-              price:
-                item.price /
-                data.coins[`bsc:${buyTokenAddress}`].prices[index].price,
-              timestamp: date,
-            };
-            mainData.push(itemdata);
+      ApiService.getChartDetails(sellTokenAddress, buyTokenAddress, value).then(
+        async (response: any) => {
+          if (response) {
+            let mainData: any = [];
+            await response.coins[`bsc:${sellTokenAddress}`]?.prices.map(
+              (item: any, index: any) => {
+                const date = DateTime.fromSeconds(
+                  parseInt(item.timestamp, 10)
+                ).toFormat(value == "period=1h&span=24" ? "t" : "MMM d ");
+                let itemdata = {
+                  price:
+                    item.price /
+                    response.coins[`bsc:${buyTokenAddress}`]?.prices[index]
+                      .price,
+                  timestamp: date,
+                };
+                mainData.push(itemdata);
+              }
+            );
+            setChartData(mainData);
           }
-        );
-        setChartData(mainData);
-      }
+        }
+      );
     } catch (error) {
       console.error("There was a problem fetching data:", error);
     }
@@ -287,381 +226,396 @@ const Home: NextPage = () => {
           <Card height="810px" minWidth="450px" maxW="md">
             <CardBody>
               <Flex>
-                {/* <form onSubmit={handleSubmit(onSubmit)}> */}
-                {/* <FormControl isInvalid={errors.name}> */}
-                {/* <FormLabel htmlFor="name">First name</FormLabel>
-              <Input
-                id="name"
-                placeholder="name"
-                {...register("name", {
-                  required: "This is required",
-                  minLength: { value: 4, message: "Minimum length should be 4" }
-                })}
-              /> */}
-                <Steps
-                  visibility={"hidden"}
-                  ml="-10px"
-                  colorScheme="pink"
-                  activeStep={activeStep}
-                >
-                  <Step key="Step 1">
-                    <Box sx={{ rounded: "md" }}>
-                      <div>
-                        {/* Select Network Card */}
-                        <Card variant="outline">
-                          <CardBody borderRadius="lg">
-                            {/* <Text mb='8px'>Choose Network:</Text> */}
-                            <Heading mb="8px" size="sm">
-                              Choose Network:
-                            </Heading>
-                            <Select
-                              id="network"
-                              icon={
-                                <img src="https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg"></img>
-                              }
-                              focusBorderColor="pink.400"
-                              placeholder="Select option"
-                              {...register("name", {
-                                required: "Please select the network",
-                              })}
-                            >
-                              {chains.map((item) => (
-                                <option value={item.name}>
-                                  {" "}
-                                  <img
-                                    style={{
-                                      width: "50px",
-                                      height: "50px",
-                                      borderRadius: "50%",
-                                    }}
-                                    src={item.logoURI}
-                                  ></img>
-                                  {item.name}
-                                </option>
-                              ))}
-                            </Select>
-                            <FormErrorMessage>
-                              <Text> {errors.name}</Text>
-                            </FormErrorMessage>
-                            <Heading mt={5} mb="8px" size="sm">
-                              Choose Protocol:
-                            </Heading>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  {/* <FormControl isInvalid={errors.name}> */}
+                  <div>
+                    <Steps
+                      visibility={"hidden"}
+                      ml="-10px"
+                      colorScheme="pink"
+                      activeStep={activeStep}
+                    >
+                      <Step key="Step 1">
+                        <Box sx={{ rounded: "md" }}>
+                          <div>
+                            {/* Select Network Card */}
+                            <Card variant="outline">
+                              <CardBody borderRadius="lg">
+                                {/* <Text mb='8px'>Choose Network:</Text> */}
+                                <Heading mb="8px" size="sm">
+                                  {txt.choose_network}
+                                </Heading>
+                                <Select
+                                  id="network"
+                                  icon={
+                                    <img src="https://ecoswap.exchange/tokens/0x38/BNB-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.svg"></img>
+                                  }
+                                  focusBorderColor="pink.400"
+                                  placeholder={txt.select_option}
+                                  {...register("name", {
+                                    required: "Please select the network",
+                                  })}
+                                >
+                                  {chains.map((item) => (
+                                    <option value={item.name}>
+                                      {" "}
+                                      <img
+                                        style={{
+                                          width: "50px",
+                                          height: "50px",
+                                          borderRadius: "50%",
+                                        }}
+                                        src={item.logoURI}
+                                      ></img>
+                                      {item.name}
+                                    </option>
+                                  ))}
+                                </Select>
+                                {errors.name && (
+                                  <Text fontSize="xs" color="red">
+                                    {txt.required_error}
+                                  </Text>
+                                )}
+                                {/* <FormErrorMessage>
+                                  <Text> {errors.name}</Text>
+                                </FormErrorMessage> */}
+                                <Heading mt={5} mb="8px" size="sm">
+                                  {txt.choose_protocol}
+                                </Heading>
 
-                            <Select
-                              id="protocol"
-                              {...register("protocol", {
-                                required: "Please select the protocol",
-                              })}
-                              icon={
-                                <img src="https://icon-library.com/images/swap-icon-png/swap-icon-png-16.jpg"></img>
-                              }
-                              focusBorderColor="pink.400"
-                              placeholder="Select option"
-                            >
-                              {protocol.map((item) => (
-                                <option value={item.name}>
-                                  {" "}
-                                  <img
-                                    style={{
-                                      width: "50px",
-                                      height: "50px",
-                                      borderRadius: "50%",
-                                    }}
-                                    src={item.logoURI}
-                                  ></img>
-                                  {item.name}
-                                </option>
-                              ))}
-                            </Select>
-                            <FormErrorMessage>
-                              <Text> {errors.protocol}</Text>
-                            </FormErrorMessage>
-                          </CardBody>
-                        </Card>
+                                <Select
+                                  id="protocol"
+                                  icon={
+                                    <img src="https://icon-library.com/images/swap-icon-png/swap-icon-png-16.jpg"></img>
+                                  }
+                                  focusBorderColor="pink.400"
+                                  placeholder={txt.select_option}
+                                  {...register("protocol", {
+                                    required: "Please select the protocol",
+                                  })}
+                                >
+                                  {protocol.map((item) => (
+                                    <option value={item.name}>
+                                      {" "}
+                                      <img
+                                        style={{
+                                          width: "50px",
+                                          height: "50px",
+                                          borderRadius: "50%",
+                                        }}
+                                        src={item.logoURI}
+                                      ></img>
+                                      {item.name}
+                                    </option>
+                                  ))}
+                                </Select>
+                                {errors.name && (
+                                  <Text fontSize="xs" color="red">
+                                    {txt.required_error}
+                                  </Text>
+                                )}
+                                {/* <FormErrorMessage>
+                                  <Text> {errors.protocol}</Text>
+                                </FormErrorMessage> */}
+                              </CardBody>
+                            </Card>
 
-                        {/* Sell recive Card */}
-                        <Card variant="outline" mt={5}>
-                          <CardBody borderRadius="lg">
-                            <Stack
-                              direction="row"
-                              justifyContent={"space-between"}
-                              spacing={4}
-                            >
-                              <Heading mb="5px" size="sm">
-                                Sell
-                              </Heading>
-                              <Heading mb="5px" pr={1} size="sm">
-                                Receive
-                              </Heading>
-                            </Stack>
-                            <Stack
-                              direction="row"
-                              justifyContent={"space-between"}
-                              spacing={4}
-                            >
-                              <SearchTokenModal
-                                getTokenAddressData={handleSellInvest}
-                              ></SearchTokenModal>
+                            {/* Sell recive Card */}
+                            <Card variant="outline" mt={5}>
+                              <CardBody borderRadius="lg">
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                  spacing={4}
+                                >
+                                  <Heading mb="5px" size="sm">
+                                    {txt.sell}
+                                  </Heading>
+                                  <Heading mb="5px" pr={1} size="sm">
+                                    {txt.receive}
+                                  </Heading>
+                                </Stack>
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                  spacing={4}
+                                >
+                                  <SearchTokenModal
+                                    getTokenAddressData={handleSellInvest}
+                                  ></SearchTokenModal>
 
-                              <Icon
-                                as={MdSwapHorizontalCircle}
-                                w={10}
-                                h={10}
-                                color="black"
-                              />
+                                  <Icon
+                                    as={MdSwapHorizontalCircle}
+                                    w={10}
+                                    h={10}
+                                    color="black"
+                                  />
 
-                              {/* <Button  leftIcon={<FaQuestionCircle />} rightIcon={<FaArrowDown />} colorScheme='pink' variant='solid'>
+                                  {/* <Button  leftIcon={<FaQuestionCircle />} rightIcon={<FaArrowDown />} colorScheme='pink' variant='solid'>
                               Select
                             </Button> */}
-                              <SearchTokenModal
-                                getTokenAddressData={handleBuyInvest}
-                              ></SearchTokenModal>
-                            </Stack>
-                          </CardBody>
-                        </Card>
+                                  <SearchTokenModal
+                                    getTokenAddressData={handleBuyInvest}
+                                  ></SearchTokenModal>
+                                </Stack>
+                              </CardBody>
+                            </Card>
 
-                        {/* How much ETH do you want to invest? Card */}
-                        <Card variant="outline" mt={5}>
-                          <CardBody borderRadius="lg">
-                            <Stack
-                              direction="row"
-                              justifyContent={"space-between"}
-                              spacing={4}
-                            >
-                              <Heading mb="8px" size="sm">
-                                How much {sellToken} do you want to invest?
-                              </Heading>
-                            </Stack>
-                            <Stack
-                              direction="row"
-                              justifyContent={"space-between"}
-                              spacing={4}
-                            >
-                              <InputGroup>
-                                <InputLeftElement
-                                  pointerEvents="none"
-                                  children={
-                                    // <FaEthereum color='#D53F8C' h={ 10 } w={ 10 } />
-                                    <img
-                                      src={sellTokenImg}
-                                      height={20}
-                                      width={20}
-                                    ></img>
-                                  }
-                                />
-                                <Input
-                                  focusBorderColor="pink.400"
-                                  errorBorderColor="red.300"
-                                  type="number"
-                                  placeholder="0"
-                                />
-                              </InputGroup>
-                              <Button colorScheme="pink" variant="outline">
-                                Max
-                              </Button>
-                              <Button colorScheme="pink" variant="outline">
-                                Half
-                              </Button>
-                            </Stack>
-                            <Stack spacing={4}>
-                              <Text fontSize="sm">In wallet: 0 ETH</Text>
-                            </Stack>
-                          </CardBody>
-                        </Card>
+                            {/* How much ETH do you want to invest? Card */}
+                            <Card variant="outline" mt={5}>
+                              <CardBody borderRadius="lg">
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                  spacing={4}
+                                >
+                                  <Heading mb="8px" size="sm">
+                                    {txt.how_much} {sellToken}{" "}
+                                    {txt.do_you_want_to_invest}
+                                  </Heading>
+                                </Stack>
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                  spacing={4}
+                                >
+                                  <InputGroup>
+                                    <InputLeftElement
+                                      pointerEvents="none"
+                                      children={
+                                        // <FaEthereum color='#D53F8C' h={ 10 } w={ 10 } />
+                                        <img
+                                          src={sellTokenImg}
+                                          height={20}
+                                          width={20}
+                                        ></img>
+                                      }
+                                    />
+                                    <Input
+                                      focusBorderColor="pink.400"
+                                      errorBorderColor="red.300"
+                                      type="number"
+                                      placeholder="0"
+                                    />
+                                  </InputGroup>
+                                  <Button colorScheme="pink" variant="outline">
+                                    {txt.max}
+                                  </Button>
+                                  <Button colorScheme="pink" variant="outline">
+                                    {txt.half}
+                                  </Button>
+                                </Stack>
+                                <Stack spacing={4}>
+                                  <Text fontSize="sm">
+                                    {txt.in_wallet} 0 ETH
+                                  </Text>
+                                </Stack>
+                              </CardBody>
+                            </Card>
 
-                        {/* Executes Card */}
-                        <Card variant="outline" mt={5}>
-                          <CardBody borderRadius="lg">
-                            <Stack spacing={4}>
-                              <Heading fontSize="lg" mb={7}>
-                                Executes
-                              </Heading>
-                            </Stack>
-                            <Stack
-                              direction="row"
-                              justifyContent={"space-between"}
-                              spacing={4}
-                            >
-                              <Heading mb="8px" size="sm">
-                                How many days?
-                              </Heading>
-                            </Stack>
-                            <Stack
-                              direction="row"
-                              justifyContent={"space-between"}
-                              spacing={4}
-                            >
-                              <InputGroup>
-                                <Input
-                                  focusBorderColor="pink.400"
-                                  errorBorderColor="red.300"
-                                  colorScheme="pink"
-                                  type="number"
-                                  placeholder="Custome"
-                                />
-                              </InputGroup>
-                              <Button colorScheme="pink" variant="outline">
-                                7
-                              </Button>
-                              <Button colorScheme="pink" variant="outline">
-                                15
-                              </Button>
-                              <Button colorScheme="pink" variant="outline">
-                                30
-                              </Button>
-                            </Stack>
-                          </CardBody>
-                        </Card>
+                            {/* Executes Card */}
+                            <Card variant="outline" mt={5}>
+                              <CardBody borderRadius="lg">
+                                <Stack spacing={4}>
+                                  <Heading fontSize="lg" mb={7}>
+                                    {txt.executes}
+                                  </Heading>
+                                </Stack>
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                  spacing={4}
+                                >
+                                  <Heading mb="8px" size="sm">
+                                    {txt.how_many_day}
+                                  </Heading>
+                                </Stack>
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                  spacing={4}
+                                >
+                                  <InputGroup>
+                                    <Input
+                                      focusBorderColor="pink.400"
+                                      errorBorderColor="red.300"
+                                      colorScheme="pink"
+                                      type="number"
+                                      placeholder="Custome"
+                                    />
+                                  </InputGroup>
+                                  <Button colorScheme="pink" variant="outline">
+                                    7
+                                  </Button>
+                                  <Button colorScheme="pink" variant="outline">
+                                    15
+                                  </Button>
+                                  <Button colorScheme="pink" variant="outline">
+                                    30
+                                  </Button>
+                                </Stack>
+                              </CardBody>
+                            </Card>
 
-                        {/* Executes Card */}
-                        <Card variant="outline" mt={5}>
-                          <CardBody borderRadius="lg">
-                            <Stack
-                              direction="row"
-                              justifyContent={"space-between"}
-                              spacing={4}
-                            >
-                              {/* <Button width={'100%'} colorScheme='pink' variant='solid'>
+                            {/* Executes Card */}
+                            <Card variant="outline" mt={5}>
+                              <CardBody borderRadius="lg">
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                  spacing={4}
+                                >
+                                  {/* <Button width={'100%'} colorScheme='pink' variant='solid'>
                                       Continue
                                     </Button>   */}
-                              {hasCompletedAllSteps && (
-                                <Box sx={{ my: 8, p: 8, rounded: "md" }}>
-                                  <Heading fontSize="xl" textAlign={"center"}>
-                                    Woohoo! All steps completed! 🎉
+                                  {hasCompletedAllSteps && (
+                                    <Box sx={{ my: 8, p: 8, rounded: "md" }}>
+                                      <Heading
+                                        fontSize="xl"
+                                        textAlign={"center"}
+                                      >
+                                        {txt.woohoo}
+                                      </Heading>
+                                    </Box>
+                                  )}
+                                  <Flex width="100%" justify="flex-end" gap={4}>
+                                    {hasCompletedAllSteps ? (
+                                      <Button
+                                        width={"100%"}
+                                        colorScheme="pink"
+                                        variant={"solid"}
+                                        onClick={reset}
+                                      >
+                                        {txt.start_over}
+                                      </Button>
+                                    ) : (
+                                      <>
+                                        <Button
+                                          type="submit"
+                                          width={"100%"}
+                                          colorScheme="pink"
+                                          variant={"solid"}
+                                          // onClick={nextStep}
+                                        >
+                                          {isLastStep
+                                            ? txt.finish
+                                            : txt.continue}
+                                        </Button>
+                                      </>
+                                    )}
+                                  </Flex>
+                                </Stack>
+                              </CardBody>
+                            </Card>
+                          </div>
+                        </Box>
+                      </Step>
+
+                      <Step key="Step 2">
+                        <Card width={"100%"}>
+                          <CardBody borderRadius="lg">
+                            {/* You'll Invest Card */}
+
+                            <Card variant="outline" mt={5}>
+                              <CardBody borderRadius="lg">
+                                <Button
+                                  leftIcon={<ArrowBackIcon></ArrowBackIcon>}
+                                  isDisabled={activeStep === 0}
+                                  onClick={prevStep}
+                                  width={"100%"}
+                                  colorScheme="pink"
+                                  variant={"outline"}
+                                >
+                                  {txt.go_back}
+                                </Button>
+                              </CardBody>
+                            </Card>
+
+                            <Card variant="outline" mt={5}>
+                              <CardBody borderRadius="lg">
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"flex-start"}
+                                  alignItems={"flex-end"}
+                                  spacing={4}
+                                >
+                                  <Heading mb="8px" size="sm">
+                                    {txt.you_will_invest}
                                   </Heading>
-                                </Box>
-                              )}
-                              <Flex width="100%" justify="flex-end" gap={4}>
-                                {hasCompletedAllSteps ? (
                                   <Button
-                                    width={"100%"}
+                                    leftIcon={<Eth></Eth>}
                                     colorScheme="pink"
-                                    variant={"solid"}
-                                    onClick={reset}
+                                    variant="outline"
                                   >
-                                    Start Over
+                                    0.0014
                                   </Button>
-                                ) : (
-                                  <>
-                                    <Button
-                                      type="submit"
-                                      width={"100%"}
-                                      colorScheme="pink"
-                                      variant={"solid"}
-                                      onClick={nextStep}
-                                    >
-                                      {isLastStep ? "Finish" : "Continue"}
-                                    </Button>
-                                  </>
-                                )}
-                              </Flex>
-                            </Stack>
+                                </Stack>
+                                <Stack
+                                  mt={5}
+                                  direction="row"
+                                  justifyContent={"flex-start"}
+                                  alignItems={"flex-end"}
+                                  spacing={4}
+                                >
+                                  <Heading mb="8px" size="sm">
+                                    {txt.we_will_swap}
+                                  </Heading>
+                                  <Button
+                                    leftIcon={<Eth></Eth>}
+                                    colorScheme="pink"
+                                    variant="outline"
+                                  >
+                                    0.004
+                                  </Button>
+                                  <Heading mb="8px" size="sm">
+                                    {txt.everyday_for}
+                                  </Heading>
+                                </Stack>
+                                <Stack
+                                  mt={5}
+                                  direction="row"
+                                  justifyContent={"flex-start"}
+                                  alignItems={"flex-end"}
+                                  spacing={4}
+                                >
+                                  <Button colorScheme="pink" variant="outline">
+                                    1
+                                  </Button>
+                                  <Heading mb="8px" size="sm">
+                                    {txt.days}
+                                  </Heading>
+                                </Stack>
+                              </CardBody>
+                            </Card>
+
+                            <Card variant="outline" mt={5}>
+                              <CardBody borderRadius="lg">
+                                <Button
+                                  isDisabled={activeStep === 0}
+                                  // onClick={prevStep}
+                                  width={"100%"}
+                                  colorScheme="pink"
+                                  variant={"solid"}
+                                >
+                                  {txt.create_position}
+                                </Button>
+                              </CardBody>
+                            </Card>
                           </CardBody>
                         </Card>
-                      </div>
-                    </Box>
-                  </Step>
-
-                  <Step key="Step 2">
-                    <Card width={"100%"}>
-                      <CardBody borderRadius="lg">
-                        {/* You'll Invest Card */}
-
-                        <Card variant="outline" mt={5}>
-                          <CardBody borderRadius="lg">
-                            <Button
-                              leftIcon={<ArrowBackIcon></ArrowBackIcon>}
-                              isDisabled={activeStep === 0}
-                              onClick={prevStep}
-                              width={"100%"}
-                              colorScheme="pink"
-                              variant={"outline"}
-                            >
-                              Go Back
-                            </Button>
-                          </CardBody>
-                        </Card>
-
-                        <Card variant="outline" mt={5}>
-                          <CardBody borderRadius="lg">
-                            <Stack
-                              direction="row"
-                              justifyContent={"flex-start"}
-                              alignItems={"flex-end"}
-                              spacing={4}
-                            >
-                              <Heading mb="8px" size="sm">
-                                You'll Invest
-                              </Heading>
-                              <Button
-                                leftIcon={<Eth></Eth>}
-                                colorScheme="pink"
-                                variant="outline"
-                              >
-                                0.0014
-                              </Button>
-                            </Stack>
-                            <Stack
-                              mt={5}
-                              direction="row"
-                              justifyContent={"flex-start"}
-                              alignItems={"flex-end"}
-                              spacing={4}
-                            >
-                              <Heading mb="8px" size="sm">
-                                We'll Swap
-                              </Heading>
-                              <Button
-                                leftIcon={<Eth></Eth>}
-                                colorScheme="pink"
-                                variant="outline"
-                              >
-                                0.004
-                              </Button>
-                              <Heading mb="8px" size="sm">
-                                Everyday for
-                              </Heading>
-                            </Stack>
-                            <Stack
-                              mt={5}
-                              direction="row"
-                              justifyContent={"flex-start"}
-                              alignItems={"flex-end"}
-                              spacing={4}
-                            >
-                              <Button colorScheme="pink" variant="outline">
-                                1
-                              </Button>
-                              <Heading mb="8px" size="sm">
-                                days
-                              </Heading>
-                            </Stack>
-                          </CardBody>
-                        </Card>
-
-                        <Card variant="outline" mt={5}>
-                          <CardBody borderRadius="lg">
-                            <Button
-                              isDisabled={activeStep === 0}
-                              // onClick={prevStep}
-                              width={"100%"}
-                              colorScheme="pink"
-                              variant={"solid"}
-                            >
-                              Create Position
-                            </Button>
-                          </CardBody>
-                        </Card>
-                      </CardBody>
-                    </Card>
-                  </Step>
-                </Steps>
-
-                {/* </FormControl> */}
-                {/* <Button mt={4} colorScheme="teal" isLoading={isSubmitting} type="submit">
-                                Submit
-                              </Button> */}
-                {/* </form> */}
+                      </Step>
+                    </Steps>
+                  </div>
+                  {/* </FormControl> */}
+                  {/* <Button
+                    mt={4}
+                    colorScheme="teal"
+                    isLoading={isSubmitting}
+                    type="submit"
+                  >
+                    Submit
+                  </Button> */}
+                </form>
               </Flex>
             </CardBody>
           </Card>
@@ -689,7 +643,7 @@ const Home: NextPage = () => {
                     borderRadius: 20,
                   }}
                 >
-                  {time.map((item) => {
+                  {timeArray.map((item) => {
                     return (
                       <Button
                         onClick={() => setActiveChartTime(item.id)}
@@ -721,12 +675,12 @@ const Home: NextPage = () => {
                   {" "}
                   ●{" "}
                 </Heading>{" "}
-                <Text>DefiWrap</Text>{" "}
+                <Text>{txt.defiWrap}</Text>{" "}
                 <Heading color={"green.500"} pl={5} size="md" pr={1}>
                   {" "}
                   ●{" "}
                 </Heading>{" "}
-                <Text>DefiLlama</Text>
+                <Text>{txt.defiLlama}</Text>
               </Stack>
 
               {chart("preserveStart")}
