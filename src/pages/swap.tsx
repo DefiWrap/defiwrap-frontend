@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 // @ts-ignore
 import * as React from "react";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount, useSignMessage, usePrepareContractWrite, useContractWrite, useWaitForTransaction,  usePrepareSendTransaction, useSendTransaction,} from "wagmi";
 import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Checkbox } from '@chakra-ui/react'
 import styles from "../styles/PositionsDetail.module.css";
+import { useDebounce } from 'use-debounce'
+import { utils } from 'ethers'
 
 import { useState,useEffect } from "react";
 import { verifyMessage } from "ethers/lib/utils";
@@ -19,15 +21,22 @@ import { ethers } from "ethers";
 import Web3 from "web3";
 const qs = require( 'qs' );
 const BigNumber = require('bignumber.js');
-const web3 = require('web3');
+const web3 = require( 'web3' );
 
 
 
 
 
 
-export default function SignExample() {
-  const { isConnected } = useAccount();
+
+
+
+
+export default function SignExample ()
+{
+  
+
+  const { address, isConnected, isDisconnected } = useAccount()
 
   
   const [ sellTokenAddress, setSellTokenAddress ] = useState( "" )
@@ -44,8 +53,77 @@ export default function SignExample() {
   let swapPriceJSON = ""
  
  
+  const maxApproval = 100000
   
+                
 
+             const {
+                    config,
+                    error: prepareError,
+                    isError: isPrepareError,
+                  } = usePrepareContractWrite({
+              address: address,
+              abi: [{ "inputs": [ { "internalType": "string", "name": "name", "type": "string" }, { "internalType": "string", "name": "symbol", "type": "string" }, { "internalType": "uint256", "name": "max_supply", "type": "uint256" } ], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Transfer", "type": "event" }, { "inputs": [ { "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" } ], "name": "allowance", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "approve", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" } ], "name": "balanceOf", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burnFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "decimals", "outputs": [ { "internalType": "uint8", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" } ], "name": "decreaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" } ], "name": "increaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "totalSupply", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transfer", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transferFrom", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }],
+              functionName: 'approve',
+              args: ['0xdef1c0ded9bec7f1a1670819833240f027b25eff',
+                maxApproval,],
+                  } )
+  
+            const { data, error, isError, write } = useContractWrite(config)
+          
+  
+            const { isLoading, isSuccess } = useWaitForTransaction({
+              hash: data?.hash,
+
+            })
+ 
+            
+            // const sendTransaction = async () => {
+            //   console.log( "Executing myFunction1" ); // Add your console log statement here
+            //       const swapQuoteJSON = await getQuote( address );
+                  
+
+            //     const {
+            //         config: sendaddress,
+            //         error: prepareErrorSend,
+            //         isError: isPrepareErrorSend,
+            //       } = usePrepareContractWrite({
+            //   address: address,
+            //   abi: [{ "inputs": [ { "internalType": "string", "name": "name", "type": "string" }, { "internalType": "string", "name": "symbol", "type": "string" }, { "internalType": "uint256", "name": "max_supply", "type": "uint256" } ], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Transfer", "type": "event" }, { "inputs": [ { "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" } ], "name": "allowance", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "approve", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" } ], "name": "balanceOf", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burnFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "decimals", "outputs": [ { "internalType": "uint8", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" } ], "name": "decreaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" } ], "name": "increaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "totalSupply", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transfer", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transferFrom", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }],
+            //   functionName: 'sendTransaction',
+            //   args: [swapQuoteJSON,],
+            //       } )
+              
+            //   const { data: data2, write: sendTrans } = useContractWrite( sendaddress );
+            //   await sendTrans()
+            //    console.log("data======>>>>>",data2)
+              
+            //   };
+            
+              // const sendTransactionfun = async () =>
+              // {
+                        
+                          
+              //   const swapSendJSON = await getQuote( address );
+                        
+                        
+              //   console.log("swap send transaction",swapSendJSON)
+              //   const { config } = usePrepareSendTransaction(({
+              //         from: address,
+              //         to: "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
+              //         value: swapSendJSON.price,
+              //         gasPrice: swapSendJSON.gasPrice,
+              //     }) )
+              //   const { data, sendTransaction } = useSendTransaction( config )
+                        
+              //   const { isLoading, isSuccess } = useWaitForTransaction( {
+              //     hash: data?.hash,
+              //   } )
+              //   sendTransaction()
+                        
+              // }
+            
+           
 
   const handleBuyFromSearchModel = ( buyTokenData: any ) =>
   {
@@ -55,7 +133,7 @@ export default function SignExample() {
     setBuyToken( JSON.parse( buyTokenData ).symbol )
     setbuyTokenImg(JSON.parse( buyTokenData ).logoURI)
     
-          console.log("Buy token ======>>>>>>>>",buyTokenAddress)
+    console.log("Buy token ======>>>>>>>>",buyTokenAddress)
 
   };
 
@@ -72,66 +150,99 @@ export default function SignExample() {
 
   const [ tokens, setTokens ] = useState( [] )
   
-  async function getPrice(){
-    console.log("Getting Price");
+  async function getPrice ()
+  {
+    
+    try
+    {
+       console.log("Getting Price");
   
     // if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value) return;
     let amount = Number((sellAmount) * 10 ** 18);
   
+    // const params = {
+    //     sellToken: sellTokenAddress,
+    //     buyToken: buyTokenAddress,
+    //w     // sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+    //     // buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+    //     sellAmount: amount,
+    // }
     const params = {
-        sellToken: sellTokenAddress,
-        buyToken: buyTokenAddress,
-        sellAmount: amount,
-    }
+    buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+    sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+    sellAmount: '1000000000000000',
+    //takerAddress: '0x20613aBe93e4611Cf547b4395E4248c6129c8697',
+    };
   
     const headers =
     
     {
-        '0x-api-key' :  ' e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e'
+        '0x-api-key' :  '1de2d124-1e69-41a7-9c1e-7ce3f16c25bf'
     } 
 
     // Fetch the swap price.
-    const response = await fetch( `https://api.0x.org/swap/v1/price?${ qs.stringify( params ) }`, { headers } );
+    const response = await fetch( `https://goerli.api.0x.org/swap/v1/price?${ qs.stringify( params ) }`, { headers } );
             
     swapPriceJSON = await response.json();
     console.log("PriceJSON: ===========>>>>>>>>", swapPriceJSON);
     
     setToAmount( swapPriceJSON.buyAmount / (10 ** 18))
     setEstimatedGas( swapPriceJSON.estimatedGas )
+      
+    } catch ( error )
+    {
+      
+      console.log(error)
+    }
+   
     // setPrice( swapPriceJSON.price )
       //  console.log( "from get pprice price=============>>>>>>>>>>>>>", price );
 
 }
+  
  async  function getQuote (account)
   {
     
 
    console.log("getquote for account =====>>>>>>>",account)
 
-const params = {
-    // Not all token symbols are supported. The address of the token can be used instead.
-    sellToken: sellTokenAddress,
-    buyToken: buyTokenAddress,
-    // Note that the DAI token uses 18 decimal places, so `sellAmount` is `100 * 10^18`.
-    sellAmount: ( sellAmount * 10 ** 18 ),
-    takerAddress: account,
-   };
+// const params = {
+//     // Not all token symbols are supported. The address of the token can be used instead.
+//   //   sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+//   // buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+//      sellToken: sellTokenAddress,
+//         buyToken: buyTokenAddress,
+//     // Note that the DAI token uses 18 decimal places, so `sellAmount` is `100 * 10^18`.
+//     sellAmount: ( sellAmount * 10 ** 18 ),
+//   takerAddress: account,
+//   // estimatedGas: "111000000",
+   
+//    };
+ const params = {
+     buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+    sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+    sellAmount: '1000000000000000',
+    takerAddress: '0x20613aBe93e4611Cf547b4395E4248c6129c8697',
+};
    
 
     const headers =
     
     {
-        '0x-api-key' :  ' e6ab47d1-f31a-4dcd-8eea-abe2ef56d74e'
+      '0x-api-key': '1de2d124-1e69-41a7-9c1e-7ce3f16c25bf',
     } 
 
-    // Fetch the swap price.
-    const response = await fetch( `https://api.0x.org/swap/v1/price?${ qs.stringify( params ) }`, { headers } );
-       
+    // Fetch the swap quote.
+          // const response = await fetch(
+          //     `https://goerli.api.0x.org/swap/v1/quote?${qs.stringify(params)}`, { headers }
+          // );
+       const response = await fetch( `https://goerli.api.0x.org/swap/v1/quote?${ qs.stringify( params ) }`, { headers } );
 
-// console.log("Response =============>>>>>>>>>>>>>",await response.json());
+
+// console.log("Response =============>>>>>>>>>>>>>",await response.json()); 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 
    swapQuoteJSON = await response.json();
-   console.log("swapquotejson with probleme 1 =========>>>>>>>>>>>>>>>>>>",swapQuoteJSON)
+   console.log("swapquotejson with probleme 1 =========>>>>>>>>>>>>>>>>>>", swapQuoteJSON)
    setToAmount ( (swapQuoteJSON.buyAmount / (10 ** 18)))
    setEstimatedGas( swapQuoteJSON.estimatedGas )
   //  setPrice(swapQuoteJSON.price)
@@ -160,7 +271,7 @@ async function trySwap(){
     let accounts = await ethereum.request( { method: "eth_accounts" } );
     let takerAddress = accounts[ 0 ];
     console.log( "takerAddress: ", takerAddress );
-  
+
     const swapQuoteJSON = await getQuote( takerAddress );
   
     // Set Token Allowance
@@ -181,17 +292,19 @@ async function trySwap(){
       maxApproval,
     )
       
-      .send({ from: takerAddress })
+      .send({ from : takerAddress })
 
       .then( tx =>
       {
         console.log( "tx:=======>>>>>>>>> ", tx )
       } );
+    
       // Perform the swap
     console.log( "from address: 0.782 ETH ========>>>>>>>> ", { from: takerAddress } );
     
 
-    const receipt = await web3.eth.sendTransaction(swapQuoteJSON);
+    const receipt = await web3.eth.sendTransaction( await swapQuoteJSON );
+    alert( receipt)
     console.log("receipt: ========>>>>>>>> ", receipt);
   }
   catch ( Error )   
@@ -200,7 +313,8 @@ async function trySwap(){
     }
 
   
-}
+  }
+
 
    useEffect(() => {
      // getQuote()
@@ -215,285 +329,315 @@ async function trySwap(){
     
     return (
       <>
-         <div  className={styles.container}>
-            <div className={styles.main}>
+        <div className={ styles.container }>
+        
+          <div className={styles.main}>
                 
 
                   <Box display={"flex"} flexDirection={"row"} >
-                        <Box minWidth={"410px"} flexDirection={"column"}  borderRadius='lg' >
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault()
+                          write?.()
+                        }}
+                      >
+                          <Box minWidth={ "410px" } flexDirection={ "column" } borderRadius='lg' >
+                                      
                             
+                                              {/* main card   */}
+                                      <Card  m='12px' maxW='sm'>
+                                      <CardBody> 
+                                          
+                                          {/* Sell recive Card */}
+                                          <Card variant = "outline">
+                                <CardBody borderRadius='lg'>
                   
-                                    {/* main card   */}
-                            <Card  m='12px' maxW='sm'>
-                              <CardBody> 
-                                
-                                {/* Sell recive Card */}
-                                <Card variant = "outline">
-                      <CardBody borderRadius='lg'>
-        
-                                          <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
-                                           
-                                              <Select iconColor="pink.500" icon={ <Bnb /> } placeholder='Select Network' >
-                                                <option value='option1'>BNB Chain</option>
+                                                    <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
+                                                    
+                                                        <Select iconColor="pink.500" icon={ <Bnb /> } placeholder='Select Network' >
+                                                          <option value='option1'>BNB Chain</option>
+                                                        
+                                                        </Select>
+                                                    </Stack>
+                                            </CardBody> 
+                                          </Card>
+
+
+                              {/* You pay Card */ }
+                              <Card variant = "outline" mt={5} >
+                          <CardBody borderRadius='lg'>
+                              <Stack  direction='row' justifyContent={ "space-between" } >
+                              <Heading  mb='5px' size='sm'>You Pay</Heading>
+                              <Text  mb='5px' pr={ 1 } size='xs'>Balance 0 </Text>
+                            </Stack>
+                        <Card variant = "outline" >
+                          <CardBody borderRadius='lg'>
+                          
+                            <Stack direction='column'  >
                                               
-                                              </Select>
-                                          </Stack>
-                                  </CardBody> 
-                                </Card>
+                                        {/* <p>Data from child component: {buyTokenAddress}</p> */}
+                                        
 
+                            <SearchModal getTokenAddressData={handleSellFromSearchModel}  status={"You Sell"}></SearchModal>
 
-                    {/* Sell recive Card */ }
-                    <Card variant = "outline" mt={5} >
-                <CardBody borderRadius='lg'>
-                     <Stack  direction='row' justifyContent={ "space-between" } >
-                    <Heading  mb='5px' size='sm'>You Pay</Heading>
-                    <Text  mb='5px' pr={ 1 } size='xs'>Balance 0 </Text>
-                  </Stack>
-              <Card variant = "outline" >
-                <CardBody borderRadius='lg'>
-                 
-                  <Stack direction='column'  >
-                                     
-                              {/* <p>Data from child component: {buyTokenAddress}</p> */}
+                          
+                              <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} style={{  textAlign:"center"}} placeholder="0"></Input>
                               
+                              </Stack>                                                                                                                                                                                                                        
+                                  <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                                              
 
-                   <SearchModal getTokenAddressData={handleSellFromSearchModel}  status={"You Sell"}></SearchModal>
+                          
+                                        <Text  fontSize='sm'>
+                                        Amount :{toAmount}
+                                        </Text>
+                              
+                                  </Stack>
+                                  <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                                              
 
-                
-                     <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} style={{  textAlign:"center"}} placeholder="0"></Input>
-                    
-                    </Stack>                                                                                                                                                                                                                        
-                        <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
-                                     
-
-                
-                              <Text  fontSize='sm'>
-                              Amount :{toAmount}
-                              </Text>
-                    
-                        </Stack>
-                         <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
-                                     
-
-                
-                              <Text  fontSize='sm'>
-                             Estimated Gas: {estimatedGas}
-                              </Text>
-                    
-                        </Stack>
-                </CardBody> 
-                        </Card>
-                        
-                      </ CardBody>
-                    </Card>
-
-                    <Stack direction='row' justifyContent={ "center" } mt='-3' mb='-9'  position="relative" >
-                                            <Icon as={MdSwapHorizontalCircle} zIndex={1} w={10} h={10} />
-
-                    </Stack>
-
-                    <Card variant = "outline" mt={5} >
-                <CardBody borderRadius='lg'>
-                     <Stack  direction='row' justifyContent={ "space-between" } >
-                    <Heading  mb='5px' size='sm'>You Receive</Heading>
-                   
-                  </Stack>
-              <Card variant = "outline" >
-                <CardBody borderRadius='lg'>
-                 
-                  <Stack direction='column'  >
-                                     
-                                                  {/* <p>Data from child component: { sellTokenAddress }</p> */}
-                                                                             
-                   <SearchModal getTokenAddressData={handleBuyFromSearchModel} status={"You Receive"} ></SearchModal>
-
-                
-                              <Input value={toAmount} onChange={getPrice}>
-                              </Input>
-                    
-                  </Stack>
-                    <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
-                                     
-
- 
-
-                
-                     <Text  fontSize='sm'>
-                  $0.00
-                  </Text>
-                    
-                        </Stack>
-                        
-                </CardBody> 
-                        </Card>
-                        
-                      </ CardBody>
-                    </Card>
-
-                
-                       {/* bottom Card */}
-                                <Card variant = "outline" mt={3}>
-                                  <CardBody borderRadius='lg'>
-                                    <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
-                                                  <Heading size='sm'>Selected route:</Heading>
-                                                  <Heading size='sm'>-</Heading>
-                                    </Stack>
-                                        <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
-                                                  <Heading size='sm'>Transaction cost:</Heading>
-                                                  <Heading size='sm'>-</Heading>
-                                    </Stack>
-                                    <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
-                                                  <Heading size='sm'>Minimum received:</Heading>
-                                                  <Heading size='sm'>-</Heading>
-                                    </Stack>
-                                  </CardBody> 
-                                </Card>
-
-
-  
-                                {/* button Card */}
-                                <Card variant = "outline" mt={3}>
-                                  <CardBody borderRadius='lg'>
+                          
+                                        <Text  fontSize='sm'>
+                                      Estimated Gas: {estimatedGas}
+                                        </Text>
+                              
+                                  </Stack>
+                          </CardBody> 
+                                  </Card>
                                   
-                                    <Stack direction='row' justifyContent={ "space-between" } spacing={ 4 }>
-                                    
-                                    
-                                     <Button onClick={trySwap}  width={'100%'} colorScheme='pink' variant='solid'>
-                                            Swap
-                                        </Button> 
-                                    </Stack>
-                                  
-                                  </CardBody> 
-                                </Card>
-                              
-                              </CardBody>
-                              
-                              
-                            </Card>      
-                    </Box>
-                    
+                                </ CardBody>
+                              </Card>
 
+                              <Stack direction='row' justifyContent={ "center" } mt='-3' mb='-9'  position="relative" >
+                                                      <Icon as={MdSwapHorizontalCircle} zIndex={1} w={10} h={10} />
+
+                              </Stack>
+
+                              <Card variant = "outline" mt={5} >
+                          <CardBody borderRadius='lg'>
+                              <Stack  direction='row' justifyContent={ "space-between" } >
+                              <Heading  mb='5px' size='sm'>You Receive</Heading>
+                            
+                            </Stack>
+                        <Card variant = "outline" >
+                          <CardBody borderRadius='lg'>
+                          
+                            <Stack direction='column'  >
+                                              
+                                                            {/* <p>Data from child component: { sellTokenAddress }</p> */}
+                                                                                      
+                            <SearchModal getTokenAddressData={handleBuyFromSearchModel} status={"You Receive"} ></SearchModal>
+
+                          
+                                        <Input value={toAmount} onChange={getPrice}>
+                                        </Input>
+                              
+                            </Stack>
+                              <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                                              
+
+          
+
+                          
+                              <Text  fontSize='sm'>
+                            $0.00
+                            </Text>
+                              
+                                  </Stack>
+                                  
+                          </CardBody> 
+                                  </Card>
+                                  
+                                </ CardBody>
+                              </Card>
+
+                          
+                                {/* bottom Card */}
+                                          <Card variant = "outline" mt={3}>
+                                            <CardBody borderRadius='lg'>
+                                              <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
+                                                            <Heading size='sm'>Selected route:</Heading>
+                                                            <Heading size='sm'>-</Heading>
+                                              </Stack>
+                                                  <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
+                                                            <Heading size='sm'>Transaction cost:</Heading>
+                                                            <Heading size='sm'>-</Heading>
+                                              </Stack>
+                                              <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"} spacing={ 4 }>
+                                                            <Heading size='sm'>Minimum received:</Heading>
+                                                            <Heading size='sm'>-</Heading>
+                                              </Stack>
+                                            </CardBody> 
+                                          </Card>
+
+
+            
+                                          {/* button Card */}
+                                          <Card variant = "outline" mt={3}>
+                                            <CardBody borderRadius='lg'>
+                                            
+                                              <Stack direction='column' justifyContent={ "space-between" } spacing={ 4 }>
+                                              
+                                              
+                                                <Button onClick={trySwap}  width={'100%'} colorScheme='pink' variant='solid'>
+                                                        Swap
+                                                </Button> 
+                              {/* <button disabled={trySwap} onClick={() => trySwap?.()}>
+                                {isLoading ? 'Sending...' : 'Send'}
+                              </button>
+                              {isSuccess && (
+                                <div>
+                                  Successfully swaped
+                                </div>
+                              )} */}
+                                                
+                                                
+                            
+                            <Button type="submit" colorScheme="pink" disabled={!write || isLoading}>
+                                {isLoading ? 'Approving...' : 'Approve'}
+                              </Button>
+                              {isSuccess && (
+                                <div>
+                                  Successfully  Approved!
+                                </div>
+                              )}
+                              {(isPrepareError || isError) && (
+                                <div>Error: {(prepareError || error)?.message}</div>
+                              )}
+                                              </Stack>
+                                            
+                                            </CardBody> 
+                                          </Card>
+                                        
+                                        </CardBody>
+                                        
+                                        
+                                      </Card>      
+                          </Box>
+                    
+                        </form>
                     <Box display={"flex"} flexDirection={"column"}>
 
                                   <Box minW={800} borderRadius='lg' >
                                     
 
                                           {/* Sell recive Card */}
-                                          <Card  m={"12px"} minW={"lg"} minH={"xs"} width={"100%"} >
-                                            <CardBody   borderRadius='lg'>
-                                                        
-                                    <Button colorScheme="pink" borderRadius={"100%"} h={50} w={50} onClick={getPrice} > <MdRefresh size={"30px"} ></MdRefresh></Button>
-  
+                                    <Card  m={"12px"} minW={"lg"} minH={"xs"} width={"100%"} >
+                                      <CardBody   borderRadius='lg'>
+                                                  
+                              <Button colorScheme="pink" borderRadius={"100%"} h={50} w={50} onClick={getPrice} > <MdRefresh size={"30px"} ></MdRefresh></Button>
+
+                
+                                                    
+                                                    <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
+
+                                                    
+                                                    
+                                                      <FaChartLine color="pink.500" size={"70px"}></FaChartLine>
+                                                          <Heading size='lg'>Introducing Defiwraps Meta Aggregator</Heading>
+                  
+
+                                                    <Stack direction='row' justifyContent={"center"} alignItems={"center"}> 
+
+                                                        <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
+                                                                                                <b>&lt; 0.001</b>  (1.03USD)
+                                                      </Button>
+                                                        <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
+                                                                                                <b>&lt; 0.001</b>  (1.03USD)
+                                                      </Button>
+                                                        <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
+                                                                                                <b>&lt; 0.001</b>  (1.03USD)
+                                                      </Button>
+                                                      </Stack>
+                                                    </Stack>
+                                                  
+                                                <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
+
+                                                    
+                                                          <Text>We find the best prices across all of DeFi so you do not have to.
+                                                              <br></br> You can now make sure you are getting the best deal possible
+
+                                                            Supporting:
+                                                          </Text>
+                                                          <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
+                                                            <b>&lt; 0.001</b>  (1.03USD)
+                                                          </Button>
+                                                </Stack>
+                
+
+                  <Card variant = "outline"  mt={3}>
+                            <CardBody borderRadius='lg'>
+                              <Stack mb={3} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
+                      {/* <Heading size='sm'></Heading> */}
+                      <Checkbox size='md' colorScheme='pink' defaultChecked>
+Selected
+</Checkbox>
+                                            <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"}>
+                                              <Button borderRadius={50} size={"xs"} colorScheme="green" >
+                                                  <b>Best</b>
+                                              </Button>
+                                              <Button borderRadius={50} size={"xs"} colorScheme="gray" leftIcon={<FaGasPump h={ 4 } w={ 4 }> </FaGasPump>} >
+                                                    1.03 $
+                                              </Button>
+                                            </Stack>
+                              </Stack>
+                    
+                          <hr></hr>                          
+      <Stack mt={6} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
                       
-                                                          
-                                                          <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
-
-                                                          
-                                                          
-                                                            <FaChartLine color="pink.500" size={"70px"}></FaChartLine>
-                                                                <Heading size='lg'>Introducing Defiwraps Meta Aggregator</Heading>
-                        
-
-                                                          <Stack direction='row' justifyContent={"center"} alignItems={"center"}> 
-
-                                                              <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                                                                      <b>&lt; 0.001</b>  (1.03USD)
-                                                            </Button>
-                                                              <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                                                                      <b>&lt; 0.001</b>  (1.03USD)
-                                                            </Button>
-                                                              <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                                                                      <b>&lt; 0.001</b>  (1.03USD)
-                                                            </Button>
-                                                            </Stack>
-                                                          </Stack>
-                                                        
-                                                      <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
-
-                                                          
-                        <Text>We find the best prices across all of DeFi so you do not have to.
-                          <br></br> You can now make sure you are getting the best deal possible
-
-Supporting:</Text>
-                                                                <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                                  <b>&lt; 0.001</b>  (1.03USD)
-                                                                </Button>
-                      </Stack>
-                      
-
-                       <Card variant = "outline"  mt={3}>
-                                  <CardBody borderRadius='lg'>
-                                    <Stack mb={3} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
-                            {/* <Heading size='sm'></Heading> */}
-                            <Checkbox size='md' colorScheme='pink' defaultChecked>
-    Selected
-  </Checkbox>
-                                                  <Stack direction='row' justifyContent={ "space-between" } alignItems={"center"}>
-                                                    <Button borderRadius={50} size={"xs"} colorScheme="green" >
-                                                        <b>Best</b>
-                                                    </Button>
-                                                    <Button borderRadius={50} size={"xs"} colorScheme="gray" leftIcon={<FaGasPump h={ 4 } w={ 4 }> </FaGasPump>} >
-                                                          1.03 $
-                                                    </Button>
-                                                  </Stack>
-                                    </Stack>
-                          
-                                <hr></hr>                          
-            <Stack mt={6} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
-                           
-                            <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
-                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src={sellTokenImg}
-                              ></img>
-                                  <Stack direction='column'>
-                                <Heading size='md'>{ sellToken } { sellAmount }</Heading>
-                                         
-                                        <Text pt={-5} size='xs'>$0.98</Text>
-                              </Stack>     
-                              <Text color={"pink.500"}  size='xl'>
-                                 ●
-                            </Text> 
-                            </Stack>
-                                                            <hr style={ { borderStyle: "dotted", borderTopWidth: "5px", width: "15%" } } ></hr>
-
-                              <Stack direction='row' >
-                      
-                              <Stack direction='row' width={ "100%" } alignItems={ "center" }>
-                             
-                                         <Button borderRadius={50} size={"sm"} colorScheme="pink" leftIcon={<I1inch h={ 4 } w={ 4 }> </I1inch>} >
-                                                                  <b>1 Inch</b>
-                                  </Button>
-                            
-                              
-                                 
-                                  
-                          </Stack>          
-                            </Stack>
-
-                          <hr style={ { borderStyle: "dotted", borderTopWidth: "5px", width: "15%" } } ></hr>
-<Heading color={"pink.500"}  size='md'>
-                                &rarr;
-                            </Heading> 
-                            <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
-                                              <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src={buyTokenImg}
-                              ></img>
-                                  <Stack direction='column'>
-                                <Heading size='md'>{ toAmount } { buyToken}</Heading>
-                                         
-                                        <Text pt={-5} size='xs'>$0.98 (-0.40% )</Text>
-                                 </Stack>          
-                            </Stack>
-                                    </Stack>
+                      <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
+                                        <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src={sellTokenImg}
+                        ></img>
+                            <Stack direction='column'>
+                          <Heading size='md'>{ sellToken } { sellAmount }</Heading>
                                     
-                          
+                                  <Text pt={-5} size='xs'>$0.98</Text>
+                        </Stack>     
+                        <Text color={"pink.500"}  size='xl'>
+                            ●
+                      </Text> 
+                      </Stack>
+                                                      <hr style={ { borderStyle: "dotted", borderTopWidth: "5px", width: "15%" } } ></hr>
+
+                        <Stack direction='row' >
+                
+                        <Stack direction='row' width={ "100%" } alignItems={ "center" }>
+                        
+                                    <Button borderRadius={50} size={"sm"} colorScheme="pink" leftIcon={<I1inch h={ 4 } w={ 4 }> </I1inch>} >
+                                                            <b>1 Inch</b>
+                            </Button>
+                      
+                        
+                            
+                            
+                    </Stack>          
+                      </Stack>
+
+                    <hr style={ { borderStyle: "dotted", borderTopWidth: "5px", width: "15%" } } ></hr>
+<Heading color={"pink.500"}  size='md'>
+                          &rarr;
+                      </Heading> 
+                      <Stack direction='row' justifyContent={ "space-between" } alignItems={ "center" }>
+                                        <img style={ { marginRight: "7px" } } height={ 40 } width={ 40 } src={buyTokenImg}
+                        ></img>
+                            <Stack direction='column'>
+                          <Heading size='md'>{ toAmount } { buyToken}</Heading>
+                                    
+                                  <Text pt={-5} size='xs'>$0.98 (-0.40% )</Text>
+                            </Stack>          
+                      </Stack>
+                              </Stack>
+                              
+                    
 
 
 
-                                  </CardBody> 
-                                </Card>
-                                              
+                            </CardBody> 
+                          </Card>
+                                        
 
-                                            </CardBody> 
-                                          </Card>
+                                      </CardBody> 
+                                    </Card>
 
                                   
                                   </Box>
@@ -506,7 +650,7 @@ Supporting:</Text>
                   </Box>
                   
                <Box maxW={ 1100} m={ 8 }>
-                  <Heading mb={5} >FAQs</Heading>
+                  <Heading marginBottom={"5"}> FAQs </Heading>
                   <Accordion allowMultiple allowToggle>
   <AccordionItem>
     <h2>
@@ -540,7 +684,9 @@ Supporting:</Text>
      
            
           </div>
-         </div>
+        
+        </div>
+        
     </>
     );
   }
