@@ -1,4 +1,4 @@
-export const API_URL = {
+export const API_defilam = {
   BASE_URL: "https://coins.llama.fi/",
 };
 
