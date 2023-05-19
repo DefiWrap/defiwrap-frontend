@@ -17,6 +17,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  StatDownArrow,
   Text,
   useColorModeValue,
   useDisclosure,
@@ -151,11 +152,42 @@ export function SearchModal ({  getTokenAddressData  })
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             textAlign: "center",
           }}
         >
           <Button
+            onClick={ onOpen }
+            leftIcon={
+              <img
+                style={{ borderRadius: "50%" }}
+                height={18}
+                width={18}
+                src={item.logoURI}
+              ></img>
+            }
+            variant={ "unstyled" } width={ "100%" } rightIcon={ <StatDownArrow color={ "pink.500" } ></StatDownArrow> } colorScheme="whiteAlpha" >
+            
+                       {item.symbol ? (
+              <b
+                onClick={listViewClick}
+                style={{ cursor: "pointer" }}
+                id={item.address}
+              >
+                {item.symbol}
+              </b>
+            ) : (
+              <b
+                onClick={onOpen}
+                style={{ cursor: "pointer" }}
+                id={item.address}
+              >
+                Select
+              </b>
+            )}
+          </Button>
+
+          {/* <Button
             onClick={onOpen}
             leftIcon={
               <img
@@ -185,9 +217,9 @@ export function SearchModal ({  getTokenAddressData  })
                 Select
               </b>
             )}
-          </Button>
+          </Button> */}
 
-          <Text fontSize="sm">{item.name}</Text>
+          {/* <Text fontSize="sm">{item.name}</Text> */}
         </div>
       ))}
 

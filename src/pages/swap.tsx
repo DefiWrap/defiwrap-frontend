@@ -2,7 +2,7 @@
 // @ts-ignore
 import * as React from "react";
 import { useAccount, useSignMessage, usePrepareContractWrite, useContractWrite, useWaitForTransaction,  usePrepareSendTransaction, useSendTransaction,} from "wagmi";
-import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Checkbox } from '@chakra-ui/react'
+import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Checkbox, MenuIcon, StatDownArrow } from '@chakra-ui/react'
 import styles from "../styles/PositionsDetail.module.css";
 import { useDebounce } from 'use-debounce'
 import { utils } from 'ethers'
@@ -12,13 +12,14 @@ import { verifyMessage } from "ethers/lib/utils";
 import { SignMessageArgs } from "@wagmi/core";
 import { NextSeo } from "next-seo";
 import { Bnb, Eth, I1inch, Matic } from "@chakra-icons/cryptocurrency-icons";
-import { FaArrowDown, FaArrowRight, FaChartLine, FaDeploydog, FaDrawPolygon, FaEthereum, FaGasPump, FaQuestionCircle, FaRecycle, FaRegCircle } from "react-icons/fa";
+import { FaArrowDown, FaArrowRight, FaChartLine, FaCheckCircle, FaDeploydog, FaDrawPolygon, FaEthereum, FaGasPump, FaGreaterThan, FaQuestionCircle, FaRecycle, FaRegCircle } from "react-icons/fa";
 import { DurationModal } from "../components/DurationModal";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowDownIcon } from "@chakra-ui/icons";
 import { MdArrowDropDown, MdRefresh, MdSwapHorizontalCircle } from "react-icons/md";
 import { SearchModal } from "../components/SearchModal";
 import { ethers } from "ethers";
 import Web3 from "web3";
+import { BsMenuDown } from "react-icons/bs";
 const qs = require( 'qs' );
 const BigNumber = require('bignumber.js');
 const web3 = require( 'web3' );
@@ -370,40 +371,35 @@ async function trySwap(){
                               <Heading  mb='5px' size='sm'>You Pay</Heading>
                               <Text  mb='5px' pr={ 1 } size='xs'>Balance 0 </Text>
                             </Stack>
-                        <Card variant = "outline" >
+                       
+                            <Card variant = "elevated" >
                           <CardBody borderRadius='lg'>
                           
-                            <Stack direction='column'  >
+                            <Stack direction='row'  >
                                               
                                         {/* <p>Data from child component: {buyTokenAddress}</p> */}
                                         
+                            <SearchModal getTokenAddressData={handleSellFromSearchModel} ></SearchModal>
 
-                            <SearchModal getTokenAddressData={handleSellFromSearchModel}  status={"You Sell"}></SearchModal>
+                            {/* <Button variant={"unstyled"} width={"100%"} rightIcon={<StatDownArrow color={"pink.500"} ></StatDownArrow>} colorScheme="whiteAlpha" >Select </Button> */}
 
                           
-                              <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} style={{  textAlign:"center"}} placeholder="0"></Input>
+                              <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} focusBorderColor="rgba(255, 255, 255, .0)" style={{  textAlign:"right" , border:"none", padding:"0"}} placeholder="0"></Input>
                               
                               </Stack>                                                                                                                                                                                                                        
-                                  <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                                  <Stack direction='row' justifyContent={"space-between"} spacing={ 4 }>
                                               
 
-                          
                                         <Text  fontSize='sm'>
-                                        Amount :{toAmount}
+                                        {sellToken ? sellToken : "WETH"}
                                         </Text>
-                              
-                                  </Stack>
-                                  <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
-                                              
-
-                          
-                                        <Text  fontSize='sm'>
-                                      Estimated Gas: {estimatedGas}
+                               <Text  fontSize='sm'>
+                                      $0.08{estimatedGas}
                                         </Text>
-                              
                                   </Stack>
+                                  
                           </CardBody> 
-                                  </Card>
+                        </Card>
                                   
                                 </ CardBody>
                               </Card>
@@ -419,30 +415,30 @@ async function trySwap(){
                               <Heading  mb='5px' size='sm'>You Receive</Heading>
                             
                             </Stack>
-                        <Card variant = "outline" >
+                        <Card variant = "elevated" >
                           <CardBody borderRadius='lg'>
                           
-                            <Stack direction='column'  >
+                            <Stack direction='row'  >
                                               
                                                             {/* <p>Data from child component: { sellTokenAddress }</p> */}
                                                                                       
-                            <SearchModal getTokenAddressData={handleBuyFromSearchModel} status={"You Receive"} ></SearchModal>
+                            <SearchModal getTokenAddressData={handleBuyFromSearchModel}></SearchModal>
 
                           
-                                        <Input value={toAmount} onChange={getPrice}>
-                                        </Input>
+                                      
+                              <Input value={toAmount}   onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} focusBorderColor="rgba(255, 255, 255, .0)" style={{  textAlign:"right" , border:"none", padding:"0"}} placeholder="0"></Input>
+
                               
                             </Stack>
-                              <Stack direction='row' justifyContent={ "center" }  spacing={ 4 }>
+                              <Stack direction='row' justifyContent={"space-between"} spacing={ 4 }>
                                               
 
-          
-
-                          
-                              <Text  fontSize='sm'>
-                            $0.00
-                            </Text>
-                              
+                                        <Text  fontSize='sm'>
+                                          {buyToken ? buyToken : "WETH"}
+                                        </Text>
+                               <Text  fontSize='sm'>
+                                      $0.08{estimatedGas}
+                                        </Text>
                                   </Stack>
                                   
                           </CardBody> 
@@ -493,7 +489,7 @@ async function trySwap(){
                                                 
                                                 
                             
-                            <Button type="submit" colorScheme="pink" disabled={!write || isLoading}>
+                            {/* <Button type="submit" colorScheme="pink" disabled={!write || isLoading}>
                                 {isLoading ? 'Approving...' : 'Approve'}
                               </Button>
                               {isSuccess && (
@@ -503,7 +499,7 @@ async function trySwap(){
                               )}
                               {(isPrepareError || isError) && (
                                 <div>Error: {(prepareError || error)?.message}</div>
-                              )}
+                              )} */}
                                               </Stack>
                                             
                                             </CardBody> 
@@ -524,48 +520,20 @@ async function trySwap(){
                                           {/* Sell recive Card */}
                                     <Card  m={"12px"} minW={"lg"} minH={"xs"} width={"100%"} >
                                       <CardBody   borderRadius='lg'>
-                                                  
-                              <Button colorScheme="pink" borderRadius={"100%"} h={50} w={50} onClick={getPrice} > <MdRefresh size={"30px"} ></MdRefresh></Button>
+                              <Stack mb={3} defaultValue={"option1"} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
+                              <Select focusBorderColor="pink.500" borderColor={"pink.500"} icon={<polyline />} colorScheme="pink" maxWidth={"200px"} placeholder='Most received tokens'>
+                                <option value='option2'><Heading size='md'> <MdRefresh></MdRefresh></Heading> Gas cost considered</option>
+                                <option value='option3'>Least gas</option>
+                              </Select>
+                        <Button onClick={getPrice} colorScheme="pink" borderRadius={ "100%" } w={"35px"} h={"35px"} >
+                              <Heading size='md'> <MdRefresh   ></MdRefresh></Heading>
+                        </Button> 
+                      </Stack>
 
-                
-                                                    
-                                                    <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
 
-                                                    
-                                                    
-                                                      <FaChartLine color="pink.500" size={"70px"}></FaChartLine>
-                                                          <Heading size='lg'>Introducing Defiwraps Meta Aggregator</Heading>
-                  
-
-                                                    <Stack direction='row' justifyContent={"center"} alignItems={"center"}> 
-
-                                                        <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                                                                <b>&lt; 0.001</b>  (1.03USD)
-                                                      </Button>
-                                                        <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                                                                <b>&lt; 0.001</b>  (1.03USD)
-                                                      </Button>
-                                                        <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                                                                <b>&lt; 0.001</b>  (1.03USD)
-                                                      </Button>
-                                                      </Stack>
-                                                    </Stack>
-                                                  
-                                                <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
-
-                                                    
-                                                          <Text>We find the best prices across all of DeFi so you do not have to.
-                                                              <br></br> You can now make sure you are getting the best deal possible
-
-                                                            Supporting:
-                                                          </Text>
-                                                          <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<Eth h={ 4 } w={ 4 }> </Eth>} variant='outline'>
-                                                            <b>&lt; 0.001</b>  (1.03USD)
-                                                          </Button>
-                                                </Stack>
-                
-
-                  <Card variant = "outline"  mt={3}>
+                      { buyToken && sellToken ?
+                         <>
+                          <Card variant = "outline"  mt={3}>
                             <CardBody borderRadius='lg'>
                               <Stack mb={3} direction='row' justifyContent={ "space-between" } alignItems={"center"} >
                       {/* <Heading size='sm'></Heading> */}
@@ -634,6 +602,63 @@ Selected
 
                             </CardBody> 
                           </Card>
+                        </>
+                        
+                        
+                        : 
+                       <>
+                        <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
+
+                          
+                          
+                            <FaChartLine color="pink.500" size={"150px"}></FaChartLine>
+                                <Heading size='lg'>Introducing Defiwraps Meta Aggregator</Heading>
+
+
+                          <Stack direction='row' justifyContent={"center"} alignItems={"center"}> 
+
+                              <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<FaCheckCircle h={ 4 } w={ 4 }> </FaCheckCircle>} variant='outline'>
+                                                                      <b>No extra fees</b>
+                            </Button>
+                              <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<FaCheckCircle h={ 4 } w={ 4 }> </FaCheckCircle>} variant='outline'>
+                                                                      <b>Best price always</b>
+                            </Button>
+                             <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<FaCheckCircle h={ 4 } w={ 4 }> </FaCheckCircle>} variant='outline'>
+                                                                      <b>Buy orders</b>
+                              </Button>
+                            </Stack>
+                            <Stack direction='row' justifyContent={"center"} alignItems={"center"}> 
+
+                              <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<FaCheckCircle h={ 4 } w={ 4 }> </FaCheckCircle>} variant='outline'>
+                                                                      <b>Transaction simulation</b>
+                              </Button>
+                              <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<FaCheckCircle h={ 4 } w={ 4 }> </FaCheckCircle>} variant='outline'>
+                                                                      <b>Swap and transfer</b>
+                            </Button>
+                          </Stack>
+                          </Stack>
+                            
+                          <Stack direction='column' minH={"200px"} justifyContent={"center"} alignItems={"center"}>
+
+                                    <Heading size={"md"}  > Supporting </Heading>
+                                    <Text textAlign={"center"}>We find the best prices across all of DeFi so you do not have to do it manually.
+                                        <br></br> You can now make sure you are getting the best deal possible
+
+                                    </Text>
+                                    <Button borderRadius={50} size={"xs"} colorScheme="pink" leftIcon={<img height={"15px"} width={"15px"} src="https://ipfs.io/ipfs/QmPQY4siKEJHZGW5F4JDBrUXCBFqfpnKzPA2xDmboeuZzL"></img>} variant='outline'>
+                                      <b>0x/Matcha</b> 
+                                    </Button>
+                          </Stack>
+                        </>
+                      }
+                                        
+                          
+                        
+                      
+                      
+                        
+
+                  
                                         
 
                                       </CardBody> 
