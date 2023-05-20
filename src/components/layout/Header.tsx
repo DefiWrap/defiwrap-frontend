@@ -292,12 +292,16 @@ const NAV_ITEMS: Array<NavItem> = [
     href: "/positions",
   },
   {
-    label: "Positions Details",
+    label: "Details",
     href: "/positionsdetail",
   },
   {
     label: "Swap",
     href: "/swap",
+  },
+  {
+    label: "Landing",
+    href :"landing"
   },
   // {
   //   label: "sign Messages",
