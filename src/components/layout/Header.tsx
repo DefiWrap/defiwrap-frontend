@@ -34,7 +34,12 @@ interface NavItem {
 export function Header(props: Props) {
   const className = props.className ?? "";
   const { isOpen, onToggle } = useDisclosure();
+  const linkHoverColor = useColorModeValue( "gray.800", "white" );
+   const linkColor = useColorModeValue("gray.600", "gray.200");
+  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const linkHoverBackgroundColor = useColorModeValue("pink.500", "pink.500");
   return (
+  
 
     <>
     <Flex
@@ -62,7 +67,11 @@ export function Header(props: Props) {
           href={"/"}
           textAlign={useBreakpointValue({ base: "center", md: "left" })}
             color={ useColorModeValue( "gray.800", "white" ) }
-                  _selected={{ color: 'white', bg: '#D53F8C' }}
+                  _selected={{
+                  textDecoration: "none",
+                  color: linkHoverColor,
+                  bg: linkHoverBackgroundColor,
+                }}
 
           _hover={{
             textDecoration: "none",
@@ -101,8 +110,8 @@ export function Header(props: Props) {
 }
 
 const DesktopNav = () => {
-  const linkColor = useColorModeValue("gray.600", "gray.200");
-  const linkHoverColor = useColorModeValue("gray.800", "white");
+  const linkHoverColor = useColorModeValue( "gray.800", "white" );
+   const linkColor = useColorModeValue("gray.600", "gray.200");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
   const linkHoverBackgroundColor = useColorModeValue("pink.500", "pink.500");
   return (
@@ -119,9 +128,13 @@ const DesktopNav = () => {
                 href={navItem.href ?? "#"}
                 fontSize={"lg"}
                 fontWeight={500}
-                color={linkColor}
+                 color={linkColor}
                 rounded={ "sm" }
-                      _selected={{ color: 'white', bg: '#D53F8C' }}
+                      _selected={{
+                  textDecoration: "none",
+                  color: linkHoverColor,
+                  bg: linkHoverBackgroundColor,
+                }}
 
                 _hover={{
                   textDecoration: "none",
@@ -167,7 +180,11 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
       p={2}
       rounded={"md"}
       _hover={ { bg: useColorModeValue( "pink.500", "gray.900" ) } }
-            _selected={{ color: 'white', bg: '#D53F8C' }}
+            _selected={{
+                  textDecoration: "none",
+                  color: linkHoverColor,
+                  bg: linkHoverBackgroundColor,
+                }}
 
     >
       <Stack direction={"row"} align={"center"}>
@@ -197,13 +214,22 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav = () =>
+{
+   const linkHoverColor = useColorModeValue( "gray.800", "white" );
+   const linkColor = useColorModeValue("gray.600", "gray.200");
+  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const linkHoverBackgroundColor = useColorModeValue("pink.500", "pink.500");
   return (
     <Stack
       bg={useColorModeValue("white", "gray.800")}
       p={4}
       display={ { md: "none" } }
-            _selected={{ color: 'white', bg: '#D53F8C' }}
+            _selected={{
+                  textDecoration: "none",
+                  color: linkHoverColor,
+                  bg: linkHoverBackgroundColor,
+                }}
 
     >
       {NAV_ITEMS.map((navItem) => (
@@ -215,7 +241,11 @@ const MobileNav = () => {
 
 const MobileNavItem = ({ label, children, href }: NavItem) => {
   const { isOpen, onToggle } = useDisclosure();
-
+  
+ const linkHoverColor = useColorModeValue( "gray.800", "white" );
+   const linkColor = useColorModeValue("gray.600", "gray.200");
+  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const linkHoverBackgroundColor = useColorModeValue("pink.500", "pink.500");
   return (
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
@@ -231,7 +261,11 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         <Text
           fontWeight={600}
           color={ useColorModeValue( "gray.600", "gray.200" ) }
-                _selected={{ color: 'white', bg: '#D53F8C' }}
+                _selected={{
+                  textDecoration: "none",
+                  color: linkHoverColor,
+                  bg: linkHoverBackgroundColor,
+                }}
 
         >
           {label}
@@ -254,7 +288,11 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
           borderLeft={1}
           borderStyle={"solid"}
           borderColor={ useColorModeValue( "gray.200", "gray.700" ) }
-                _selected={{ color: 'white', bg: '#D53F8C' }}
+                _selected={{
+                  textDecoration: "none",
+                  color: linkHoverColor,
+                  bg: linkHoverBackgroundColor,
+                }}
 
           align={"start"}
         >

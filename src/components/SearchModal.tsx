@@ -161,8 +161,8 @@ export function SearchModal ({  getTokenAddressData  })
             leftIcon={
               <img
                 style={{ borderRadius: "50%" }}
-                height={18}
-                width={18}
+                height={20}
+                width={20}
                 src={item.logoURI}
               ></img>
             }
@@ -171,7 +171,7 @@ export function SearchModal ({  getTokenAddressData  })
                        {item.symbol ? (
               <b
                 onClick={listViewClick}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", fontSize:"23px" }}
                 id={item.address}
               >
                 {item.symbol}

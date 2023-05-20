@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useAccount, useSignMessage, usePrepareContractWrite, useContractWrite, useWaitForTransaction,  usePrepareSendTransaction, useSendTransaction,} from "wagmi";
 import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Checkbox, MenuIcon, StatDownArrow } from '@chakra-ui/react'
-import styles from "../styles/PositionsDetail.module.css";
+import styles from "../styles/Swap.module.css";
 import { useDebounce } from 'use-debounce'
 import { utils } from 'ethers'
 
@@ -342,11 +342,11 @@ async function trySwap(){
                           write?.()
                         }}
                       >
-                          <Box minWidth={ "410px" } flexDirection={ "column" } borderRadius='lg' >
+                          <Box   flexDirection={ "column" } borderRadius='lg' >
                                       
                             
                                               {/* main card   */}
-                                      <Card  m='12px' maxW='sm'>
+                                      <Card  m='12px' minWidth={'450px'} maxW='sm'>
                                       <CardBody> 
                                           
                                           {/* Sell recive Card */}
@@ -384,7 +384,7 @@ async function trySwap(){
                             {/* <Button variant={"unstyled"} width={"100%"} rightIcon={<StatDownArrow color={"pink.500"} ></StatDownArrow>} colorScheme="whiteAlpha" >Select </Button> */}
 
                           
-                              <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} focusBorderColor="rgba(255, 255, 255, .0)" style={{  textAlign:"right" , border:"none", padding:"0"}} placeholder="0"></Input>
+                              <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} focusBorderColor="rgba(255, 255, 255, .0)" style={{ fontSize:"21px",  textAlign:"right" , border:"none", padding:"0"}} placeholder="0"></Input>
                               
                               </Stack>                                                                                                                                                                                                                        
                                   <Stack direction='row' justifyContent={"space-between"} spacing={ 4 }>
@@ -426,7 +426,7 @@ async function trySwap(){
 
                           
                                       
-                              <Input value={toAmount}   onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} focusBorderColor="rgba(255, 255, 255, .0)" style={{  textAlign:"right" , border:"none", padding:"0"}} placeholder="0"></Input>
+                              <Input value={toAmount}   onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} focusBorderColor="rgba(255, 255, 255, .0)" style={{ fontSize:"21px", textAlign:"right" , border:"none", padding:"0"}} placeholder="0"></Input>
 
                               
                             </Stack>
