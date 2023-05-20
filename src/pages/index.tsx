@@ -1,6 +1,7 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+/* eslint-disable react/jsx-key */
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 import type { NextPage } from "next";
-import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import {
   Input,
@@ -8,71 +9,34 @@ import {
   InputGroup,
   Icon,
   Card,
-  CardHeader,
   CardBody,
-  CardFooter,
-  ButtonGroup,
   Button,
-  Divider,
   Text,
-  Image,
   Stack,
   Heading,
-  SelectField,
   Select,
-  Center,
   Box,
-  useDisclosure,
-  Textarea,
   Flex,
+  Center,
 } from "@chakra-ui/react";
-import {
-  FaEthereum,
-  FaQuestionCircle,
-  FaArrowDown,
-  FaArrowsAltH,
-} from "react-icons/fa";
-import {
-  MdArrowDropDown,
-  MdArrowDropDownCircle,
-  MdArrowDropUp,
-  MdSwapHorizontalCircle,
-} from "react-icons/md";
-import { Eth } from "@chakra-icons/cryptocurrency-icons";
+import { MdSwapHorizontalCircle } from "react-icons/md";
 import { SearchTokenModal } from "../components/SearchTokenModal";
-import { Header } from "../components/layout/Header";
-import axios from "axios";
 
-import tokenlist from "../../data/tokens/0x38.json";
 import React, { useState, useEffect } from "react";
-import Chart from "../components/Chart";
 import {
   ResponsiveContainer,
   LineChart,
   Line,
   XAxis,
-  YAxis,
   CartesianGrid,
-  Legend,
   Tooltip,
 } from "recharts";
-import { ChevronDownIcon, QuestionIcon } from "@chakra-ui/icons";
 
 import chainlist from "../../data/chains.json";
 import protocols from "../../data/protocols.json";
 
 import { Step, Steps, useSteps } from "chakra-ui-steps";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import {
-  Fade,
-  ScaleFade,
-  Slide,
-  SlideFade,
-  Collapse,
-  FormErrorMessage,
-  FormLabel,
-  FormControl,
-} from "@chakra-ui/react";
 
 import { useForm } from "react-hook-form";
 import { DateTime } from "luxon";
@@ -99,7 +63,6 @@ const Home: NextPage = () => {
   const [investValue, setInvestValue] = useState();
   const [executesDay, setExecutesDay] = useState(executesTimeArray[0]);
   const [executesDuration, setexecutesDuration] = useState();
-
   // validations
   const {
     handleSubmit,
@@ -267,6 +230,7 @@ const Home: NextPage = () => {
 
     amount = sellAmount * (investValue || 1);
   };
+
   return (
     <>
       <div className={styles.container}>
@@ -313,7 +277,10 @@ const Home: NextPage = () => {
                                   }}
                                 >
                                   {chains.map((item, index) => (
-                                    <option value={JSON.stringify(item)}>
+                                    <option
+                                      key={item.chainId}
+                                      value={JSON.stringify(item)}
+                                    >
                                       {" "}
                                       <img
                                         style={{
@@ -512,10 +479,18 @@ const Home: NextPage = () => {
                                       }
                                     />
                                   </InputGroup>
-                                  <Button colorScheme="pink" variant="outline">
+                                  <Button
+                                    isDisabled
+                                    colorScheme="pink"
+                                    variant="outline"
+                                  >
                                     {txt.max}
                                   </Button>
-                                  <Button colorScheme="pink" variant="outline">
+                                  <Button
+                                    isDisabled
+                                    colorScheme="pink"
+                                    variant="outline"
+                                  >
                                     {txt.half}
                                   </Button>
                                 </Stack>
@@ -583,26 +558,22 @@ const Home: NextPage = () => {
                                   justifyContent={"space-between"}
                                   spacing={4}
                                 >
-                                  <InputGroup>
-                                    <Input
-                                      focusBorderColor="pink.400"
-                                      errorBorderColor="red.300"
-                                      colorScheme="pink"
-                                      type="number"
-                                      placeholder="Custome"
-                                      value={executesDuration}
-                                      onChange={(event: any) => {
-                                        setexecutesDuration(event.target.value);
-                                      }}
-                                      {...register("Custome", {
-                                        required:
-                                          "Please select the Custome value",
-                                      })}
-                                    />
-                                  </InputGroup>
+                                  <Input
+                                    focusBorderColor="pink.400"
+                                    errorBorderColor="red.300"
+                                    colorScheme="pink"
+                                    placeholder="Custome"
+                                    type="number"
+                                    value={executesDuration}
+                                    onChange={(e: any) => {
+                                      console.log("value", e.target.value);
+                                      setexecutesDuration(e.target.value);
+                                    }}
+                                  />
                                   {duration.map((item) => {
                                     return (
                                       <Button
+                                        key={item.value}
                                         onClick={() =>
                                           setexecutesDuration(item?.value)
                                         }
@@ -740,9 +711,6 @@ const Home: NextPage = () => {
                                     {(sellAmount * (investValue || 1)) /
                                       (executesDuration || 1)}
                                   </Button>
-                                  <Heading mb="8px" size="sm">
-                                    {txt.everyday_for}
-                                  </Heading>
                                 </Stack>
                                 <Stack
                                   mt={5}
@@ -751,10 +719,13 @@ const Home: NextPage = () => {
                                   alignItems={"flex-end"}
                                   spacing={4}
                                 >
+                                  <Heading mb="8px" size="sm">
+                                    {txt.everyday_for}
+                                  </Heading>
                                   <Button colorScheme="pink" variant="outline">
                                     {executesDuration}
                                   </Button>
-                                  <Heading mb="8px" size="sm">
+                                  <Heading pb="8px" size="sm">
                                     {executesDay.value}
                                   </Heading>
                                 </Stack>
@@ -794,71 +765,87 @@ const Home: NextPage = () => {
           </Card>
 
           {/* Line chart code starts from Here */}
+          {buyTokenAddress === "" ? (
+            <Card
+              minWidth={700}
+              height="880px"
+              ml={3}
+              style={{
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Text color="grey" as="b" fontSize="2xl">
+                Select a pair to view its price history
+              </Text>
+            </Card>
+          ) : (
+            <Card minWidth={700} height="880px" ml={3}>
+              <CardBody>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Heading size={"lg"}>$1906.36 USD</Heading>
+                  <Stack
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      borderWidth: 1,
+                      padding: 3,
+                      borderRadius: 20,
+                    }}
+                  >
+                    {timeArray.map((item) => {
+                      return (
+                        <Button
+                          onClick={() => setActiveChartTime(item.id)}
+                          colorScheme={
+                            activeChartTime == item.id ? "pink" : "gray"
+                          }
+                          style={{
+                            paddingLeft: 7,
+                            paddingRight: 7,
+                            margin: 2,
+                            borderRadius: 3,
+                          }}
+                        >
+                          {item.name}
+                        </Button>
+                      );
+                    })}
+                  </Stack>
+                </div>
 
-          <Card minWidth={700} height="880px" ml={3}>
-            <CardBody>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "flex-end",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Heading size={"lg"}>$1906.36 USD</Heading>
                 <Stack
                   style={{
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "flex-end",
-                    borderWidth: 1,
-                    padding: 3,
-                    borderRadius: 20,
                   }}
                 >
-                  {timeArray.map((item) => {
-                    return (
-                      <Button
-                        onClick={() => setActiveChartTime(item.id)}
-                        colorScheme={
-                          activeChartTime == item.id ? "pink" : "gray"
-                        }
-                        style={{
-                          paddingLeft: 7,
-                          paddingRight: 7,
-                          margin: 2,
-                          borderRadius: 3,
-                        }}
-                      >
-                        {item.name}
-                      </Button>
-                    );
-                  })}
+                  <Heading color={"blue.500"} pr={1} size="md">
+                    {" "}
+                    ●{" "}
+                  </Heading>{" "}
+                  <Text>{txt.defiWrap}</Text>{" "}
+                  <Heading color={"green.500"} pl={5} size="md" pr={1}>
+                    {" "}
+                    ●{" "}
+                  </Heading>{" "}
+                  <Text>{txt.defiLlama}</Text>
                 </Stack>
-              </div>
 
-              <Stack
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "flex-end",
-                }}
-              >
-                <Heading color={"blue.500"} pr={1} size="md">
-                  {" "}
-                  ●{" "}
-                </Heading>{" "}
-                <Text>{txt.defiWrap}</Text>{" "}
-                <Heading color={"green.500"} pl={5} size="md" pr={1}>
-                  {" "}
-                  ●{" "}
-                </Heading>{" "}
-                <Text>{txt.defiLlama}</Text>
-              </Stack>
-
-              {chart("preserveStart")}
-            </CardBody>
-          </Card>
+                {chart("preserveStart")}
+              </CardBody>
+            </Card>
+          )}
         </main>
       </div>
     </>
