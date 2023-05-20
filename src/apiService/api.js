@@ -17,4 +17,19 @@ export const ApiService = {
         return err;
       });
   },
+  async getTokenCurrentPrice(sellTokenAddr) {
+    return axios
+      .get(
+        API_defilam.BASE_URL +
+          END_POINTS.GET_CURRENT_TOKEN_PRICE +
+          `bsc:${sellTokenAddr}`
+      )
+      .then((res) => {
+        if (res.status == 200) return res.data;
+      })
+      .catch((err) => {
+        console.log("err :: ", JSON.stringify(err));
+        return err;
+      });
+  },
 };
