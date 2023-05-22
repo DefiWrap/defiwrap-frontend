@@ -26,13 +26,6 @@ const web3 = require( 'web3' );
 
 
 
-
-
-
-
-
-
-
 export default function SignExample ()
 {
   
@@ -124,9 +117,9 @@ export default function SignExample ()
                         
               // }
             
-           
-
-  const handleBuyFromSearchModel = ( buyTokenData: any ) =>
+try
+{
+     const handleBuyFromSearchModel = ( buyTokenData: any ) =>
   {
   
     //console.log("buyTokenData",JSON.parse(buyTokenData).symbol)
@@ -323,12 +316,7 @@ async function trySwap(){
      
    }, [toAmount,estimatedGas] )
   
-  
-  if ( isConnected )
-  {
-    
-    
-    return (
+   return (
       <>
         <div className={ styles.container }>
         
@@ -714,23 +702,9 @@ Selected
         
     </>
     );
-  }
-  else
-  {
-    return(
-  
-    <div className={styles.container}>
-      <main className={ styles.main }>
-            <h1 className={styles.title}>
-            <b>
-              <a href="#">Connect your wallet</a>
-            </b>
-          </h1>
-
-      </main>
-    </div>
-  )
-  }
-
-  
+} catch ( error )
+{
+  alert(error)
+}      
+   
 }

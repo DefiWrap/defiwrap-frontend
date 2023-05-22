@@ -2,7 +2,7 @@
 // @ts-ignore
 import * as React from "react";
 import { useAccount, useSignMessage } from "wagmi";
-import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
+import { Box ,Tabs, TabList, TabPanels, Tab, TabPanel, Input ,InputLeftElement, InputGroup, Icon, Card, CardHeader, CardBody, CardFooter, ButtonGroup, Button, Divider, Text, Image, Stack, Heading, SelectField, Select, Center, Progress, CircularProgress, CircularProgressLabel, AlertDialogOverlay } from '@chakra-ui/react'
 import styles from "../styles/Positions.module.css";
 
 import { useState } from "react";
@@ -18,8 +18,9 @@ import { DurationModal } from "../components/DurationModal";
 
 export default function SignExample() {
   const { isConnected } = useAccount();
-
-  if (isConnected) {
+  try
+  {
+if (isConnected) {
     return (
       <>
          <div className={styles.container}>
@@ -263,7 +264,17 @@ export default function SignExample() {
       </main>
     </div>
   )
+    }
+    
+
+
+
+  } catch ( error )
+  {
+
+    alert(error)
   }
+  
 
   
 }

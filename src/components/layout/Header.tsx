@@ -1,4 +1,7 @@
-import React from "react";
+import NextLink from 'next/link'
+import styles from "../../styles/Header.module.css";
+import React, { useEffect,useState } from "react";
+
 import {
   Text,
   Flex,
@@ -39,13 +42,13 @@ export function Header(props: Props) {
     <>
     <Flex
         as="header"
-       
-      className={className}
-      bg={useColorModeValue("gray.50", "gray.900")}
-      color={useColorModeValue("gray.700", "gray.200")}
+        // as={NextLink}
+      //className={className}
+      bg={useColorModeValue("white", "gray.900")}
+      color={useColorModeValue("gray.900", "gray.200")}
       opacity={1}
       px={4}
-      // py={2}
+       py={2}
       // mb={8}
       //pos="fixed"
         h={85}
@@ -55,24 +58,27 @@ export function Header(props: Props) {
       borderBottom="1px"
       borderBottomWidth="small"
       borderBottomStyle="solid"
-      borderBottomColor="white"
+        borderBottomColor="white"
+        
     >
       <Flex  style={{display:"flex",alignItems:"center"}} flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
-        <Link
+          <Link
+            // as={NextLink}
           href={"/"}
           textAlign={useBreakpointValue({ base: "center", md: "left" })}
             color={ useColorModeValue( "gray.800", "white" ) }
-                  _selected={{ color: 'white', bg: '#D53F8C' }}
-
+            _selected={ { color: 'white', bg: '#D53F8C' } } 
+            
+           
           _hover={{
             textDecoration: "none",
             color: useColorModeValue("gray.800", "white"),
-            bg: useColorModeValue("green.200", "green.900"),
+            bg: useColorModeValue("pink.200", "pink.900"),
           }}
         >
           <Logo />
         </Link>
-        <Flex display={{ base: "none", md: "flex" }} ml={5}>
+        <Flex  display={{ base: "none", md: "flex" }} ml={5}>
           <DesktopNav />
         </Flex>
       </Flex>
@@ -104,36 +110,38 @@ const DesktopNav = () => {
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
-  const linkHoverBackgroundColor = useColorModeValue("pink.500", "pink.500");
+  const linkHoverBackgroundColor = useColorModeValue( "pink.500", "pink.500" );  
   return (
+
 
     <>
     <Stack direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <Box    style={{display:"flex",alignItems:"center"}}
-          key={navItem.label}>
-          <Popover trigger={"hover"} placement={"bottom-start"}>
-            <PopoverTrigger>
+        <Box    style={{display:"flex",alignItems:"center", color: linkColor}} key={navItem.label}>
+          {/* <Popover trigger={"hover"} placement={"bottom-start"}>
+            <PopoverTrigger> */}
               <Link
-                p={4}
+                as={NextLink}
+                p={3}
                 href={navItem.href ?? "#"}
                 fontSize={"lg"}
                 fontWeight={500}
                 color={linkColor}
-                rounded={ "sm" }
-                      _selected={{ color: 'white', bg: '#D53F8C' }}
-
+                rounded={ "lg" }
+                //className={styles.activelink}  
+                _selected={ { color: 'white', bg: '#D53F8C' } } 
                 _hover={{
                   textDecoration: "none",
-                  color: linkHoverColor,
+                  color: "white",
                   bg: linkHoverBackgroundColor,
-                }}
+                } }
+              style={{color:"pink"}}
+
               >
-                <Text size="sm">
-                  <Text size="b">{navItem.label}</Text>
-                </Text>
+                  {navItem.label}
+           
               </Link>
-            </PopoverTrigger>
+            {/* </PopoverTrigger>
             {navItem.children && (
               <PopoverContent
                 border={0}
@@ -150,7 +158,7 @@ const DesktopNav = () => {
                 </Stack>
               </PopoverContent>
             )}
-          </Popover>
+          </Popover> */}
         </Box>
       ))}
       </Stack>
@@ -231,7 +239,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         <Text
           fontWeight={600}
           color={ useColorModeValue( "gray.600", "gray.200" ) }
-                _selected={{ color: 'white', bg: '#D53F8C' }}
+          
 
         >
           {label}
