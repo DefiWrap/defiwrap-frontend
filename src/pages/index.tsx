@@ -1,6 +1,7 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+/* eslint-disable react/jsx-key */
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 import type { NextPage } from "next";
-import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import {
   Input,
@@ -8,50 +9,26 @@ import {
   InputGroup,
   Icon,
   Card,
-  CardHeader,
   CardBody,
-  CardFooter,
-  ButtonGroup,
   Button,
-  Divider,
   Text,
-  Image,
   Stack,
   Heading,
-  SelectField,
   Select,
-  Center,
   Box,
-  useDisclosure,
-  Textarea,
   Flex,
+  Center,
 } from "@chakra-ui/react";
-import {
-  FaEthereum,
-  FaQuestionCircle,
-  FaArrowDown,
-  FaArrowsAltH,
-} from "react-icons/fa";
-import {
-  MdArrowDropDown,
-  MdArrowDropDownCircle,
-  MdArrowDropUp,
-  MdSwapHorizontalCircle,
-} from "react-icons/md";
-import { Eth } from "@chakra-icons/cryptocurrency-icons";
+import { MdSwapHorizontalCircle } from "react-icons/md";
 import { SearchTokenModal } from "../components/SearchTokenModal";
-import { Header } from "../components/layout/Header";
-import axios from "axios";
+
 import React, { useState, useEffect } from "react";
-import Chart from "../components/Chart";
 import {
   ResponsiveContainer,
   LineChart,
   Line,
   XAxis,
-  YAxis,
   CartesianGrid,
-  Legend,
   Tooltip,
 } from "recharts";
 
@@ -60,25 +37,32 @@ import protocols from "../../data/protocols.json";
 
 import { Step, Steps, useSteps } from "chakra-ui-steps";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import {
-  Fade,
-  ScaleFade,
-  Slide,
-  SlideFade,
-  Collapse,
-  FormErrorMessage,
-  FormLabel,
-  FormControl,
-} from "@chakra-ui/react";
 
 import { useForm } from "react-hook-form";
 import { DateTime } from "luxon";
 import { ApiService } from "../apiService/api";
-import { timeArray, txt } from "../utils/constant";
+import { duration, executesTimeArray, timeArray, txt } from "../utils/constant";
 
 const steps = [{ label: "Step 1" }, { label: "Step 2" }];
 
 const Home: NextPage = () => {
+  const [sellTokenAddress, setSellTokenAddress] = useState("");
+  const [buyTokenAddress, setBuyTokenAddress] = useState("");
+  const [buyToken, setBuyToken] = useState("");
+  const [buyTokenImg, setbuyTokenImg] = useState("");
+  const [sellAmount, setSellamount] = useState(0);
+  const [sellToken, setSellToken] = useState("");
+  const [sellTokenImg, setSellTokenImg] = useState("");
+  const [activeChartTime, setActiveChartTime] = useState(timeArray[0].id);
+  const [chartData, setChartData] = useState([]);
+  const [protocol, setProtocol] = useState(protocols);
+  const [chains, setChains] = useState(chainlist);
+  const [chainTokenList, setChainTokenList] = useState([]);
+  const [onSelectNetwork, setOnSelectNetwork] = useState(chainlist[0]);
+  const [onChangeProtocol, setOnChangeProtocol] = useState();
+  const [investValue, setInvestValue] = useState();
+  const [executesDay, setExecutesDay] = useState(executesTimeArray[0]);
+  const [executesDuration, setexecutesDuration] = useState();
   // validations
   const {
     handleSubmit,
@@ -89,7 +73,7 @@ const Home: NextPage = () => {
   function onSubmit(values: any) {
     console.log("values :>> ", values);
     return new Promise((resolve) => {
-      alert(values);
+      if (values && buyToken) nextStep(1);
     });
   }
 
@@ -118,8 +102,6 @@ const Home: NextPage = () => {
     </ResponsiveContainer>
   );
 
-  const [chains, setChains] = useState(chainlist);
-
   const dataFetch = async () => {
     try {
       const response = await fetch(chainlist);
@@ -133,7 +115,6 @@ const Home: NextPage = () => {
     }
   };
 
-  const [protocol, setProtocol] = useState(protocols);
   const protocolsFetch = async () => {
     try {
       const response = await fetch(protocols);
@@ -149,20 +130,11 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     protocolsFetch();
-    dataFetch();
-    console.log("chain list data ========>>>>>>", chains);
-  }, [chains, protocols]);
-
-  const [sellTokenAddress, setSellTokenAddress] = useState("");
-  const [buyTokenAddress, setBuyTokenAddress] = useState("");
-  const [buyToken, setBuyToken] = useState("");
-  const [buyTokenImg, setbuyTokenImg] = useState("");
-  const [sellAmount, setSellamount] = useState(0);
-  const [sellToken, setSellToken] = useState("");
-  const [sellTokenImg, setSellTokenImg] = useState("");
+    // dataFetch();
+  }, [chains, protocol]);
 
   const handleSellInvest = (sellTokenData: any) => {
-    // console.log("buyTokenData",JSON.parse(sellTokenData).symbol)
+    console.log("sellTokenData :>> ", sellTokenData);
     setSellTokenAddress(JSON.parse(sellTokenData).address);
     setSellToken(JSON.parse(sellTokenData).symbol);
     setSellTokenImg(JSON.parse(sellTokenData).logoURI);
@@ -173,7 +145,6 @@ const Home: NextPage = () => {
     setBuyToken(JSON.parse(buyTokenData).symbol);
     setbuyTokenImg(JSON.parse(buyTokenData).logoURI);
   };
-  const [activeChartTime, setActiveChartTime] = useState(timeArray[0].id);
 
   useEffect(() => {
     let value =
@@ -182,48 +153,89 @@ const Home: NextPage = () => {
         : activeChartTime == 2
         ? "period=4h&span=42"
         : "period=1d&span=30";
-    console.log("activeChartTime :>> ", activeChartTime);
+    setSellTokenAddress(
+      sellTokenAddress ? sellTokenAddress : chainTokenList[0]?.address
+    );
+    setSellToken(sellToken ? sellToken : chainTokenList[0]?.symbol);
+    setSellTokenImg(sellTokenImg ? sellTokenImg : chainTokenList[0]?.logoURI);
+    if (sellTokenAddress && buyTokenAddress) {
+      tokenListFetch(value);
+    }
+    // get current token price
+    getCurrentTokenPrice(sellTokenAddress);
+  }, [chains, protocol, sellTokenAddress, buyTokenAddress, activeChartTime]);
 
-    tokenListFetch(value);
-  }, [sellTokenAddress, buyTokenAddress, activeChartTime]);
+  useEffect(() => {
+    setChainTokenList(onSelectNetwork?.tokenList);
+    setSellTokenAddress(onSelectNetwork?.address);
+    setSellToken(onSelectNetwork?.symbol);
+    setSellTokenImg(onSelectNetwork?.logoURI);
+  }, [onSelectNetwork]);
 
-  const [chartData, setChartData] = useState([]);
-
+  const getCurrentTokenPrice = async (sellValue: any) => {
+    ApiService.getTokenCurrentPrice(sellValue).then(async (response: any) => {
+      setSellamount(response.coins[`bsc:${sellValue}`]?.price);
+    });
+  };
   const tokenListFetch = async (value: String) => {
     try {
-      ApiService.getChartDetails(sellTokenAddress, buyTokenAddress, value).then(
-        async (response: any) => {
-          if (response) {
-            let mainData: any = [];
-            await response.coins[`bsc:${sellTokenAddress}`]?.prices.map(
-              (item: any, index: any) => {
-                const date = DateTime.fromSeconds(
-                  parseInt(item.timestamp, 10)
-                ).toFormat(value == "period=1h&span=24" ? "t" : "MMM d ");
-                let itemdata = {
-                  price:
-                    item.price /
-                    response.coins[`bsc:${buyTokenAddress}`]?.prices[index]
-                      .price,
-                  timestamp: date,
-                };
-                mainData.push(itemdata);
-              }
-            );
-            setChartData(mainData);
-          }
-        }
+      console.log(
+        "sellTokenAddress :>> ",
+        sellTokenAddress,
+        buyTokenAddress,
+        value
       );
+      await ApiService.getChartDetails(
+        sellTokenAddress,
+        buyTokenAddress,
+        value
+      ).then(async (response: any) => {
+        let mainData: any = [];
+        if (response) {
+          console.log("response  :>> ", response);
+          await response.coins[`bsc:${sellTokenAddress}`]?.prices.map(
+            (item: any, index: any) => {
+              const date = DateTime.fromSeconds(
+                parseInt(item.timestamp, 10)
+              ).toFormat(value == "period=1h&span=24" ? "t" : "MMM d ");
+              let itemdata = {
+                price:
+                  item.price /
+                  response.coins[`bsc:${buyTokenAddress}`]?.prices[index]
+                    ?.price,
+                timestamp: date,
+              };
+              mainData.push(itemdata);
+            }
+          );
+          setChartData(mainData);
+        }
+      });
     } catch (error) {
       console.error("There was a problem fetching data:", error);
     }
+  };
+  const OnChangesellToReceive = () => {
+    setSellTokenAddress(buyTokenAddress);
+    setSellToken(buyToken);
+    setSellTokenImg(buyTokenImg);
+
+    setBuyTokenAddress(sellTokenAddress);
+    setBuyToken(sellToken);
+    setbuyTokenImg(sellTokenImg);
+  };
+
+  const investCalculation = (value: String) => {
+    var amount = 0;
+
+    amount = sellAmount * (investValue || 1);
   };
 
   return (
     <>
       <div className={styles.container}>
         <main className={styles.main}>
-          <Card height="810px" minWidth="450px" maxW="md">
+          <Card minWidth="450px" maxW="md">
             <CardBody>
               <Flex>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -241,7 +253,6 @@ const Home: NextPage = () => {
                             {/* Select Network Card */}
                             <Card variant="outline">
                               <CardBody borderRadius="lg">
-                                {/* <Text mb='8px'>Choose Network:</Text> */}
                                 <Heading mb="8px" size="sm">
                                   {txt.choose_network}
                                 </Heading>
@@ -255,9 +266,21 @@ const Home: NextPage = () => {
                                   {...register("name", {
                                     required: "Please select the network",
                                   })}
+                                  onChange={(event: any) => {
+                                    setOnSelectNetwork(
+                                      JSON.parse(event.target.value)
+                                    );
+                                    console.log(
+                                      "Network value :>> ",
+                                      JSON.parse(event.target.value)
+                                    );
+                                  }}
                                 >
-                                  {chains.map((item) => (
-                                    <option value={item.name}>
+                                  {chains.map((item, index) => (
+                                    <option
+                                      key={item.chainId}
+                                      value={JSON.stringify(item)}
+                                    >
                                       {" "}
                                       <img
                                         style={{
@@ -293,6 +316,13 @@ const Home: NextPage = () => {
                                   {...register("protocol", {
                                     required: "Please select the protocol",
                                   })}
+                                  onChange={(event: any) => {
+                                    setOnChangeProtocol(event.target.value);
+                                    console.log(
+                                      "Protocol value :>> ",
+                                      event.target.value
+                                    );
+                                  }}
                                 >
                                   {protocol.map((item) => (
                                     <option value={item.name}>
@@ -309,7 +339,7 @@ const Home: NextPage = () => {
                                     </option>
                                   ))}
                                 </Select>
-                                {errors.name && (
+                                {errors.protocol && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
@@ -341,22 +371,42 @@ const Home: NextPage = () => {
                                   spacing={4}
                                 >
                                   <SearchTokenModal
+                                    tokenlist={chainTokenList}
+                                    isSell={true}
                                     getTokenAddressData={handleSellInvest}
                                   ></SearchTokenModal>
-
                                   <Icon
+                                    onClick={() =>
+                                      buyToken
+                                        ? OnChangesellToReceive()
+                                        : console.log("token not selected")
+                                    }
+                                    style={{
+                                      cursor: buyToken
+                                        ? "pointer"
+                                        : "not-allowed",
+                                    }}
                                     as={MdSwapHorizontalCircle}
                                     w={10}
                                     h={10}
                                     color="black"
                                   />
-
-                                  {/* <Button  leftIcon={<FaQuestionCircle />} rightIcon={<FaArrowDown />} colorScheme='pink' variant='solid'>
-                              Select
-                            </Button> */}
-                                  <SearchTokenModal
-                                    getTokenAddressData={handleBuyInvest}
-                                  ></SearchTokenModal>
+                                  <Stack>
+                                    <SearchTokenModal
+                                      tokenlist={chainTokenList}
+                                      isSell={false}
+                                      getTokenAddressData={handleBuyInvest}
+                                    ></SearchTokenModal>
+                                    {!buyTokenAddress && (
+                                      <Text
+                                        fontSize="xs"
+                                        color="red"
+                                        textAlign="right"
+                                      >
+                                        {txt.required_error}
+                                      </Text>
+                                    )}
+                                  </Stack>
                                 </Stack>
                               </CardBody>
                             </Card>
@@ -379,7 +429,9 @@ const Home: NextPage = () => {
                                   justifyContent={"space-between"}
                                   spacing={4}
                                 >
-                                  <InputGroup>
+                                  <InputGroup
+                                    style={{ flexDirection: "column" }}
+                                  >
                                     <InputLeftElement
                                       pointerEvents="none"
                                       children={
@@ -395,16 +447,58 @@ const Home: NextPage = () => {
                                       focusBorderColor="pink.400"
                                       errorBorderColor="red.300"
                                       type="number"
+                                      {...register("invest", {
+                                        required:
+                                          "Please select the invest value",
+                                      })}
                                       placeholder="0"
+                                      onChange={(event: any) => {
+                                        setInvestValue(event.target.value);
+                                        console.log(
+                                          "InvestValue value :>> ",
+                                          event.target.value
+                                        );
+                                      }}
+                                    />
+                                    <Text
+                                      fontSize="sm"
+                                      color="black"
+                                      textAlign="left"
+                                    >
+                                      {"$"}
+                                      {sellAmount * (investValue || 1)}
+                                    </Text>
+                                    <InputLeftElement
+                                      pointerEvents="none"
+                                      children={
+                                        <img
+                                          src={sellTokenImg}
+                                          height={20}
+                                          width={20}
+                                        ></img>
+                                      }
                                     />
                                   </InputGroup>
-                                  <Button colorScheme="pink" variant="outline">
+                                  <Button
+                                    isDisabled
+                                    colorScheme="pink"
+                                    variant="outline"
+                                  >
                                     {txt.max}
                                   </Button>
-                                  <Button colorScheme="pink" variant="outline">
+                                  <Button
+                                    isDisabled
+                                    colorScheme="pink"
+                                    variant="outline"
+                                  >
                                     {txt.half}
                                   </Button>
                                 </Stack>
+                                {errors.invest && (
+                                  <Text fontSize="xs" color="red">
+                                    {txt.required_error}
+                                  </Text>
+                                )}
                                 <Stack spacing={4}>
                                   <Text fontSize="sm">
                                     {txt.in_wallet} 0 ETH
@@ -416,10 +510,37 @@ const Home: NextPage = () => {
                             {/* Executes Card */}
                             <Card variant="outline" mt={5}>
                               <CardBody borderRadius="lg">
-                                <Stack spacing={4}>
-                                  <Heading fontSize="lg" mb={7}>
-                                    {txt.executes}
-                                  </Heading>
+                                <Stack
+                                  direction="row"
+                                  justifyContent={"space-between"}
+                                >
+                                  <Stack spacing={4}>
+                                    <Heading fontSize="lg" mb={7}>
+                                      {txt.executes}
+                                    </Heading>
+                                  </Stack>
+                                  <Stack direction="row">
+                                    {executesTimeArray.map((item) => {
+                                      return (
+                                        <Button
+                                          onClick={() => setExecutesDay(item)}
+                                          colorScheme={
+                                            executesDay.value == item.value
+                                              ? "pink"
+                                              : "gray"
+                                          }
+                                          style={{
+                                            paddingLeft: 7,
+                                            paddingRight: 7,
+                                            margin: 2,
+                                            borderRadius: 3,
+                                          }}
+                                        >
+                                          {item.name}
+                                        </Button>
+                                      );
+                                    })}
+                                  </Stack>
                                 </Stack>
                                 <Stack
                                   direction="row"
@@ -428,6 +549,8 @@ const Home: NextPage = () => {
                                 >
                                   <Heading mb="8px" size="sm">
                                     {txt.how_many_day}
+                                    {executesDay.value}
+                                    {"?"}
                                   </Heading>
                                 </Stack>
                                 <Stack
@@ -435,24 +558,36 @@ const Home: NextPage = () => {
                                   justifyContent={"space-between"}
                                   spacing={4}
                                 >
-                                  <InputGroup>
-                                    <Input
-                                      focusBorderColor="pink.400"
-                                      errorBorderColor="red.300"
-                                      colorScheme="pink"
-                                      type="number"
-                                      placeholder="Custome"
-                                    />
-                                  </InputGroup>
-                                  <Button colorScheme="pink" variant="outline">
-                                    7
-                                  </Button>
-                                  <Button colorScheme="pink" variant="outline">
-                                    15
-                                  </Button>
-                                  <Button colorScheme="pink" variant="outline">
-                                    30
-                                  </Button>
+                                  <Input
+                                    focusBorderColor="pink.400"
+                                    errorBorderColor="red.300"
+                                    colorScheme="pink"
+                                    placeholder="Custome"
+                                    type="number"
+                                    value={executesDuration}
+                                    onChange={(e: any) => {
+                                      console.log("value", e.target.value);
+                                      setexecutesDuration(e.target.value);
+                                    }}
+                                  />
+                                  {duration.map((item) => {
+                                    return (
+                                      <Button
+                                        key={item.value}
+                                        onClick={() =>
+                                          setexecutesDuration(item?.value)
+                                        }
+                                        colorScheme={
+                                          executesDuration == item.value
+                                            ? "pink"
+                                            : "gray"
+                                        }
+                                        variant="outline"
+                                      >
+                                        {item.value}
+                                      </Button>
+                                    );
+                                  })}
                                 </Stack>
                               </CardBody>
                             </Card>
@@ -465,9 +600,6 @@ const Home: NextPage = () => {
                                   justifyContent={"space-between"}
                                   spacing={4}
                                 >
-                                  {/* <Button width={'100%'} colorScheme='pink' variant='solid'>
-                                      Continue
-                                    </Button>   */}
                                   {hasCompletedAllSteps && (
                                     <Box sx={{ my: 8, p: 8, rounded: "md" }}>
                                       <Heading
@@ -495,7 +627,6 @@ const Home: NextPage = () => {
                                           width={"100%"}
                                           colorScheme="pink"
                                           variant={"solid"}
-                                          // onClick={nextStep}
                                         >
                                           {isLastStep
                                             ? txt.finish
@@ -543,11 +674,17 @@ const Home: NextPage = () => {
                                     {txt.you_will_invest}
                                   </Heading>
                                   <Button
-                                    leftIcon={<Eth></Eth>}
+                                    leftIcon={
+                                      <img
+                                        src={sellTokenImg}
+                                        height={20}
+                                        width={20}
+                                      ></img>
+                                    }
                                     colorScheme="pink"
                                     variant="outline"
                                   >
-                                    0.0014
+                                    {sellAmount * (investValue || 1)}
                                   </Button>
                                 </Stack>
                                 <Stack
@@ -561,15 +698,19 @@ const Home: NextPage = () => {
                                     {txt.we_will_swap}
                                   </Heading>
                                   <Button
-                                    leftIcon={<Eth></Eth>}
+                                    leftIcon={
+                                      <img
+                                        src={sellTokenImg}
+                                        height={20}
+                                        width={20}
+                                      ></img>
+                                    }
                                     colorScheme="pink"
                                     variant="outline"
                                   >
-                                    0.004
+                                    {(sellAmount * (investValue || 1)) /
+                                      (executesDuration || 1)}
                                   </Button>
-                                  <Heading mb="8px" size="sm">
-                                    {txt.everyday_for}
-                                  </Heading>
                                 </Stack>
                                 <Stack
                                   mt={5}
@@ -578,11 +719,14 @@ const Home: NextPage = () => {
                                   alignItems={"flex-end"}
                                   spacing={4}
                                 >
-                                  <Button colorScheme="pink" variant="outline">
-                                    1
-                                  </Button>
                                   <Heading mb="8px" size="sm">
-                                    {txt.days}
+                                    {txt.everyday_for}
+                                  </Heading>
+                                  <Button colorScheme="pink" variant="outline">
+                                    {executesDuration}
+                                  </Button>
+                                  <Heading pb="8px" size="sm">
+                                    {executesDay.value}
                                   </Heading>
                                 </Stack>
                               </CardBody>
@@ -621,71 +765,87 @@ const Home: NextPage = () => {
           </Card>
 
           {/* Line chart code starts from Here */}
+          {buyTokenAddress === "" ? (
+            <Card
+              minWidth={700}
+              height="880px"
+              ml={3}
+              style={{
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Text color="grey" as="b" fontSize="2xl">
+                Select a pair to view its price history
+              </Text>
+            </Card>
+          ) : (
+            <Card minWidth={700} height="880px" ml={3}>
+              <CardBody>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Heading size={"lg"}>$1906.36 USD</Heading>
+                  <Stack
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      borderWidth: 1,
+                      padding: 3,
+                      borderRadius: 20,
+                    }}
+                  >
+                    {timeArray.map((item) => {
+                      return (
+                        <Button
+                          onClick={() => setActiveChartTime(item.id)}
+                          colorScheme={
+                            activeChartTime == item.id ? "pink" : "gray"
+                          }
+                          style={{
+                            paddingLeft: 7,
+                            paddingRight: 7,
+                            margin: 2,
+                            borderRadius: 3,
+                          }}
+                        >
+                          {item.name}
+                        </Button>
+                      );
+                    })}
+                  </Stack>
+                </div>
 
-          <Card minWidth={700} height="810px" ml={3}>
-            <CardBody>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "flex-end",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Heading size={"lg"}>$1906.36 USD</Heading>
                 <Stack
                   style={{
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "flex-end",
-                    borderWidth: 1,
-                    padding: 3,
-                    borderRadius: 20,
                   }}
                 >
-                  {timeArray.map((item) => {
-                    return (
-                      <Button
-                        onClick={() => setActiveChartTime(item.id)}
-                        colorScheme={
-                          activeChartTime == item.id ? "pink" : "gray"
-                        }
-                        style={{
-                          paddingLeft: 7,
-                          paddingRight: 7,
-                          margin: 2,
-                          borderRadius: 3,
-                        }}
-                      >
-                        {item.name}
-                      </Button>
-                    );
-                  })}
+                  <Heading color={"blue.500"} pr={1} size="md">
+                    {" "}
+                    ●{" "}
+                  </Heading>{" "}
+                  <Text>{txt.defiWrap}</Text>{" "}
+                  <Heading color={"green.500"} pl={5} size="md" pr={1}>
+                    {" "}
+                    ●{" "}
+                  </Heading>{" "}
+                  <Text>{txt.defiLlama}</Text>
                 </Stack>
-              </div>
 
-              <Stack
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "flex-end",
-                }}
-              >
-                <Heading color={"blue.500"} pr={1} size="md">
-                  {" "}
-                  ●{" "}
-                </Heading>{" "}
-                <Text>{txt.defiWrap}</Text>{" "}
-                <Heading color={"green.500"} pl={5} size="md" pr={1}>
-                  {" "}
-                  ●{" "}
-                </Heading>{" "}
-                <Text>{txt.defiLlama}</Text>
-              </Stack>
-
-              {chart("preserveStart")}
-            </CardBody>
-          </Card>
+                {chart("preserveStart")}
+              </CardBody>
+            </Card>
+          )}
         </main>
       </div>
     </>

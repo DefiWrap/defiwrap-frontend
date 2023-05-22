@@ -11,7 +11,7 @@ export const txt = {
   how_much: " How much ",
   do_you_want_to_invest: "do you want to invest?",
   executes: "Executes",
-  how_many_day: "How many days?",
+  how_many_day: "How many ",
   woohoo: "Woohoo! All steps completed! 🎉",
   start_over: "Start Over",
   finish: "Finish",
@@ -25,6 +25,7 @@ export const txt = {
   defiWrap: "DefiWrap",
   defiLlama: "DefiLlama",
   select_option: "Select option",
+  amount_cannot_exceed_balance: "Amount cannot exceed balance",
 
   //   searchModal.tsx
   select: "Select",
@@ -37,4 +38,13 @@ export const timeArray = [
   { id: 1, name: "Day" },
   { id: 2, name: "Week" },
   { id: 3, name: "Month" },
+];
+export const executesTimeArray = [
+  { id: 1, name: "Daily", value: "days" },
+  { id: 2, name: "Weekly", value: "weeks" },
+];
+export const duration = [
+  { id: 1, value: 7 },
+  { id: 2, value: 15 },
+  { id: 3, value: 30 },
 ];

@@ -4,6 +4,7 @@ export const API_defilam = {
 
 export const END_POINTS = {
   CHART: "chart/",
+  GET_CURRENT_TOKEN_PRICE: "prices/current/",
 };
 
 export const HttpContentType = {
