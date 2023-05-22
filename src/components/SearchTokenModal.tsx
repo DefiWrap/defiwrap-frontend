@@ -16,6 +16,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
   Text,
   useColorModeValue,
   useDisclosure,
@@ -56,36 +57,26 @@ const sizes = {
   }),
 };
 
-export function SearchTokenModal({ tokenlist, getTokenAddressData, isSell }) {
+export function SearchTokenModal({
+  tokenlist,
+  //getTokenAddressData,
+  setSelectedSellDetail,
+  selectedSellDetail,
+  setSelectedReceiveDetail,
+  selectedReceiveDetail,
+  isSell,
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-  const [tokens, setTokens] = useState();
   const [ToToken, setToToken] = useState();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState(tokenlist);
   const [tokenQry, setTokenQry] = useState("");
 
   useEffect(() => {
-    console.log("tokenlist :>> ", tokenlist);
     setResults(tokenlist);
-    isSell ? setToToken(tokenlist[0]) : "";
   }, [tokenlist]);
-  useEffect(() => {
-    const dataFetch = async () => {
-      try {
-        const response = await fetch(tokenlist);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setTokens(data);
-      } catch (error) {
-        console.error("There was a problem fetching data:", error);
-      }
-    };
-    dataFetch();
-  }, [tokens]);
 
   // Define a function to render the search result on the page
   function handleChange(event: any) {
@@ -99,23 +90,29 @@ export function SearchTokenModal({ tokenlist, getTokenAddressData, isSell }) {
   function listViewClick(e: any) {
     try {
       const tokenAddress = e.target.id;
-      setTokenQry(tokenAddress);
       const tokenDetails = tokenlist.filter((item: any) =>
         item.address.toLowerCase().includes(tokenAddress.toLowerCase())
       );
-      setToToken(tokenDetails[0]);
-      getTokenAddressData(JSON.stringify(tokenDetails[0]));
+      isSell
+        ? (setSelectedSellDetail(tokenDetails[0]), setTokenQry(tokenDetails[0]))
+        : (setSelectedReceiveDetail(tokenDetails[0]),
+          setTokenQry(tokenDetails[0]));
       onClose();
     } catch (error) {
       console.warn("The error is========>>>>>>>>", error);
     }
   }
   useEffect(() => {
-    console.log("ToToken :>> ", ToToken);
-  }, [ToToken]);
-  return (
-    <>
-      <div
+    isSell
+      ? (setSelectedSellDetail(selectedSellDetail),
+        setTokenQry(selectedSellDetail))
+      : (setSelectedReceiveDetail(selectedReceiveDetail),
+        setTokenQry(selectedReceiveDetail));
+  }, [selectedSellDetail, selectedReceiveDetail]);
+
+  const ButtonValue = () => {
+    return (
+      <Stack
         style={{
           display: "flex",
           flexDirection: "column",
@@ -125,41 +122,45 @@ export function SearchTokenModal({ tokenlist, getTokenAddressData, isSell }) {
         <Button
           onClick={onOpen}
           leftIcon={
-            !ToToken?.logoURI ? (
+            !tokenQry?.logoURI ? (
               <QuestionIcon w={5} h={5} mr={2} />
             ) : (
               <img
                 style={{ borderRadius: "50%" }}
                 height={25}
                 width={25}
-                src={ToToken?.logoURI}
+                src={tokenQry?.logoURI}
               ></img>
             )
           }
           colorScheme="pink"
           variant="solid"
         >
-          {ToToken?.symbol ? (
+          {tokenQry?.symbol ? (
             <b
               onClick={listViewClick}
               style={{ cursor: "pointer" }}
-              id={ToToken?.address}
+              id={tokenQry?.address}
             >
-              {ToToken?.symbol}
+              {tokenQry?.symbol}
             </b>
           ) : (
             <b
               onClick={onOpen}
               style={{ cursor: "pointer" }}
-              id={ToToken?.address}
+              id={tokenQry?.address}
             >
               {txt.select}
             </b>
           )}
         </Button>
-        <Text fontSize="sm">{ToToken?.name}</Text>
-      </div>
-
+        <Text fontSize="sm">{tokenQry?.name}</Text>
+      </Stack>
+    );
+  };
+  return (
+    <>
+      <ButtonValue />
       <Modal
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}

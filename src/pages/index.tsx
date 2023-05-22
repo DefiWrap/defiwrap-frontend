@@ -63,6 +63,10 @@ const Home: NextPage = () => {
   const [investValue, setInvestValue] = useState();
   const [executesDay, setExecutesDay] = useState(executesTimeArray[0]);
   const [executesDuration, setexecutesDuration] = useState();
+  const [isContinue, setIsContinue] = useState(false);
+  const [selectedSellDetail, setSelectedSellDetail] = useState({});
+  const [selectedReceiveDetail, setSelectedReceiveDetail] = useState({});
+
   // validations
   const {
     handleSubmit,
@@ -71,7 +75,6 @@ const Home: NextPage = () => {
   } = useForm();
 
   function onSubmit(values: any) {
-    console.log("values :>> ", values);
     return new Promise((resolve) => {
       if (values && buyToken) nextStep(1);
     });
@@ -102,19 +105,6 @@ const Home: NextPage = () => {
     </ResponsiveContainer>
   );
 
-  const dataFetch = async () => {
-    try {
-      const response = await fetch(chainlist);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setChains(data);
-    } catch (error) {
-      console.error("There was a problem fetching data:", error);
-    }
-  };
-
   const protocolsFetch = async () => {
     try {
       const response = await fetch(protocols);
@@ -130,21 +120,18 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     protocolsFetch();
-    // dataFetch();
   }, [chains, protocol]);
 
-  const handleSellInvest = (sellTokenData: any) => {
-    console.log("sellTokenData :>> ", sellTokenData);
-    setSellTokenAddress(JSON.parse(sellTokenData).address);
-    setSellToken(JSON.parse(sellTokenData).symbol);
-    setSellTokenImg(JSON.parse(sellTokenData).logoURI);
-  };
-
-  const handleBuyInvest = (buyTokenData: any) => {
-    setBuyTokenAddress(JSON.parse(buyTokenData).address);
-    setBuyToken(JSON.parse(buyTokenData).symbol);
-    setbuyTokenImg(JSON.parse(buyTokenData).logoURI);
-  };
+  useEffect(() => {
+    setSellTokenAddress(selectedSellDetail?.address);
+    setSellToken(selectedSellDetail?.symbol);
+    setSellTokenImg(selectedSellDetail?.logoURI);
+  }, [selectedSellDetail]);
+  useEffect(() => {
+    setBuyTokenAddress(selectedReceiveDetail?.address);
+    setBuyToken(selectedReceiveDetail?.symbol);
+    setbuyTokenImg(selectedReceiveDetail?.logoURI);
+  }, [selectedReceiveDetail]);
 
   useEffect(() => {
     let value =
@@ -158,6 +145,7 @@ const Home: NextPage = () => {
     );
     setSellToken(sellToken ? sellToken : chainTokenList[0]?.symbol);
     setSellTokenImg(sellTokenImg ? sellTokenImg : chainTokenList[0]?.logoURI);
+
     if (sellTokenAddress && buyTokenAddress) {
       tokenListFetch(value);
     }
@@ -167,6 +155,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     setChainTokenList(onSelectNetwork?.tokenList);
+    setSelectedSellDetail(onSelectNetwork?.tokenList[0]);
     setSellTokenAddress(onSelectNetwork?.address);
     setSellToken(onSelectNetwork?.symbol);
     setSellTokenImg(onSelectNetwork?.logoURI);
@@ -179,12 +168,6 @@ const Home: NextPage = () => {
   };
   const tokenListFetch = async (value: String) => {
     try {
-      console.log(
-        "sellTokenAddress :>> ",
-        sellTokenAddress,
-        buyTokenAddress,
-        value
-      );
       await ApiService.getChartDetails(
         sellTokenAddress,
         buyTokenAddress,
@@ -192,7 +175,6 @@ const Home: NextPage = () => {
       ).then(async (response: any) => {
         let mainData: any = [];
         if (response) {
-          console.log("response  :>> ", response);
           await response.coins[`bsc:${sellTokenAddress}`]?.prices.map(
             (item: any, index: any) => {
               const date = DateTime.fromSeconds(
@@ -216,6 +198,9 @@ const Home: NextPage = () => {
     }
   };
   const OnChangesellToReceive = () => {
+    const sell = selectedSellDetail;
+    const receive = selectedReceiveDetail;
+
     setSellTokenAddress(buyTokenAddress);
     setSellToken(buyToken);
     setSellTokenImg(buyTokenImg);
@@ -223,12 +208,9 @@ const Home: NextPage = () => {
     setBuyTokenAddress(sellTokenAddress);
     setBuyToken(sellToken);
     setbuyTokenImg(sellTokenImg);
-  };
 
-  const investCalculation = (value: String) => {
-    var amount = 0;
-
-    amount = sellAmount * (investValue || 1);
+    setSelectedReceiveDetail(sell);
+    setSelectedSellDetail(receive);
   };
 
   return (
@@ -270,14 +252,11 @@ const Home: NextPage = () => {
                                     setOnSelectNetwork(
                                       JSON.parse(event.target.value)
                                     );
-                                    console.log(
-                                      "Network value :>> ",
-                                      JSON.parse(event.target.value)
-                                    );
                                   }}
                                 >
                                   {chains.map((item, index) => (
                                     <option
+                                      selected={index == 0 && true}
                                       key={item.chainId}
                                       value={JSON.stringify(item)}
                                     >
@@ -318,14 +297,13 @@ const Home: NextPage = () => {
                                   })}
                                   onChange={(event: any) => {
                                     setOnChangeProtocol(event.target.value);
-                                    console.log(
-                                      "Protocol value :>> ",
-                                      event.target.value
-                                    );
                                   }}
                                 >
-                                  {protocol.map((item) => (
-                                    <option value={item.name}>
+                                  {protocol.map((item, index) => (
+                                    <option
+                                      value={item.name}
+                                      selected={index == 0 && true}
+                                    >
                                       {" "}
                                       <img
                                         style={{
@@ -344,9 +322,6 @@ const Home: NextPage = () => {
                                     {txt.required_error}
                                   </Text>
                                 )}
-                                {/* <FormErrorMessage>
-                                  <Text> {errors.protocol}</Text>
-                                </FormErrorMessage> */}
                               </CardBody>
                             </Card>
 
@@ -373,7 +348,16 @@ const Home: NextPage = () => {
                                   <SearchTokenModal
                                     tokenlist={chainTokenList}
                                     isSell={true}
-                                    getTokenAddressData={handleSellInvest}
+                                    setSelectedSellDetail={
+                                      setSelectedSellDetail
+                                    }
+                                    selectedSellDetail={selectedSellDetail}
+                                    setSelectedReceiveDetail={
+                                      setSelectedReceiveDetail
+                                    }
+                                    selectedReceiveDetail={
+                                      selectedReceiveDetail
+                                    }
                                   ></SearchTokenModal>
                                   <Icon
                                     onClick={() =>
@@ -395,9 +379,18 @@ const Home: NextPage = () => {
                                     <SearchTokenModal
                                       tokenlist={chainTokenList}
                                       isSell={false}
-                                      getTokenAddressData={handleBuyInvest}
+                                      setSelectedSellDetail={
+                                        setSelectedSellDetail
+                                      }
+                                      selectedSellDetail={selectedSellDetail}
+                                      setSelectedReceiveDetail={
+                                        setSelectedReceiveDetail
+                                      }
+                                      selectedReceiveDetail={
+                                        selectedReceiveDetail
+                                      }
                                     ></SearchTokenModal>
-                                    {!buyTokenAddress && (
+                                    {isContinue && !buyTokenAddress && (
                                       <Text
                                         fontSize="xs"
                                         color="red"
@@ -494,7 +487,7 @@ const Home: NextPage = () => {
                                     {txt.half}
                                   </Button>
                                 </Stack>
-                                {errors.invest && (
+                                {!investValue && errors.invest && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
@@ -589,6 +582,11 @@ const Home: NextPage = () => {
                                     );
                                   })}
                                 </Stack>
+                                {isContinue && !executesDuration && (
+                                  <Text fontSize="xs" color="red">
+                                    {txt.required_error}
+                                  </Text>
+                                )}
                               </CardBody>
                             </Card>
 
@@ -627,6 +625,9 @@ const Home: NextPage = () => {
                                           width={"100%"}
                                           colorScheme="pink"
                                           variant={"solid"}
+                                          onClick={() =>
+                                            !isLastStep && setIsContinue(true)
+                                          }
                                         >
                                           {isLastStep
                                             ? txt.finish
