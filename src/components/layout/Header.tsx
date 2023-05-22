@@ -78,7 +78,7 @@ export function Header(props: Props) {
           >
             <Logo />
           </Link>
-          <Flex display={{ base: "none", md: "flex" }} ml={5}>
+          <Flex display={{ base: "none", md: "flex",  }} ml={5}>
             <DesktopNav />
           </Flex>
         </Flex>
@@ -114,10 +114,10 @@ const DesktopNav = () => {
   const router = useRouter();
   return (
     <>
-      <Stack direction={"row"} spacing={4}>
+      <Stack direction={"row"}  spacing={4}>
         {NAV_ITEMS.map((navItem) => (
           <Box
-            style={{ display: "flex", alignItems: "center" }}
+            style={{ display: "flex", alignItems: "center",height:"75px" }}
             key={navItem.label}
           >
             <Popover trigger={"hover"} placement={"bottom-start"}>
@@ -128,7 +128,7 @@ const DesktopNav = () => {
                   href={navItem.href}
                   fontSize={"lg"}
                   fontWeight={500}
-                  color={linkColor}
+                  color={ linkColor }
                   rounded={"sm"}
                   _selected={{ color: "white", bg: "#D53F8C" }}
                 >
@@ -141,8 +141,9 @@ const DesktopNav = () => {
                     _hover={{
                       color: linkHoverColor,
                       bg: linkHoverBackgroundColor,
-                    }}
-                  >
+                      rounded: "lg",
+                      cursor: "pointer",
+                    }}>
                     {navItem.label}
                   </Text>
                 </Link>
@@ -283,18 +284,18 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Home",
     href: "/",
-    // children: [
-    //   {
-    //     label: 'Explore Decentralized Finance',
-    //     subLabel: 'Trending DeFi Apps to inspire you',
-    //     href: 'https://dappradar.com/rankings/category/defi',
-    //   },
-    //   {
-    //     label: 'View wallet balance',
-    //     subLabel: 'View your wallet full balance',
-    //     href: 'https://etherscan.io/',
-    //   },
-    // ],
+    children: [
+      {
+        label: 'Explore Decentralized Finance',
+        subLabel: 'Trending DeFi Apps to inspire you',
+        href: 'https://dappradar.com/rankings/category/defi',
+      },
+      {
+        label: 'View wallet balance',
+        subLabel: 'View your wallet full balance',
+        href: 'https://etherscan.io/',
+      },
+    ],
   },
   {
     label: "Positions",
@@ -310,10 +311,6 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Landing",
-    href :"landing"
+    href :"/landing"
   },
-  // {
-  //   label: "sign Messages",
-  //   href: "/sign",
-  // },
 ];

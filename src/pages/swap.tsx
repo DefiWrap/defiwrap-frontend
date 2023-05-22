@@ -72,50 +72,7 @@ export default function SignExample ()
             })
  
             
-            // const sendTransaction = async () => {
-            //   console.log( "Executing myFunction1" ); // Add your console log statement here
-            //       const swapQuoteJSON = await getQuote( address );
-                  
-
-            //     const {
-            //         config: sendaddress,
-            //         error: prepareErrorSend,
-            //         isError: isPrepareErrorSend,
-            //       } = usePrepareContractWrite({
-            //   address: address,
-            //   abi: [{ "inputs": [ { "internalType": "string", "name": "name", "type": "string" }, { "internalType": "string", "name": "symbol", "type": "string" }, { "internalType": "uint256", "name": "max_supply", "type": "uint256" } ], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" } ], "name": "Transfer", "type": "event" }, { "inputs": [ { "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" } ], "name": "allowance", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "approve", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" } ], "name": "balanceOf", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "burnFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "decimals", "outputs": [ { "internalType": "uint8", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" } ], "name": "decreaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" } ], "name": "increaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "totalSupply", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transfer", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transferFrom", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }],
-            //   functionName: 'sendTransaction',
-            //   args: [swapQuoteJSON,],
-            //       } )
-              
-            //   const { data: data2, write: sendTrans } = useContractWrite( sendaddress );
-            //   await sendTrans()
-            //    console.log("data======>>>>>",data2)
-              
-            //   };
             
-              // const sendTransactionfun = async () =>
-              // {
-                        
-                          
-              //   const swapSendJSON = await getQuote( address );
-                        
-                        
-              //   console.log("swap send transaction",swapSendJSON)
-              //   const { config } = usePrepareSendTransaction(({
-              //         from: address,
-              //         to: "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
-              //         value: swapSendJSON.price,
-              //         gasPrice: swapSendJSON.gasPrice,
-              //     }) )
-              //   const { data, sendTransaction } = useSendTransaction( config )
-                        
-              //   const { isLoading, isSuccess } = useWaitForTransaction( {
-              //     hash: data?.hash,
-              //   } )
-              //   sendTransaction()
-                        
-              // }
             
 try
 {
@@ -151,16 +108,9 @@ try
     {
        console.log("Getting Price");
   
-    // if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value) return;
     let amount = Number((sellAmount) * 10 ** 18);
   
-    // const params = {
-    //     sellToken: sellTokenAddress,
-    //     buyToken: buyTokenAddress,
-    //w     // sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
-    //     // buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
-    //     sellAmount: amount,
-    // }
+ 
     const params = {
     buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
     sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
@@ -189,9 +139,7 @@ try
       console.log(error)
     }
    
-    // setPrice( swapPriceJSON.price )
-      //  console.log( "from get pprice price=============>>>>>>>>>>>>>", price );
-
+   
 }
   
  async  function getQuote (account)
@@ -200,18 +148,6 @@ try
 
    console.log("getquote for account =====>>>>>>>",account)
 
-// const params = {
-//     // Not all token symbols are supported. The address of the token can be used instead.
-//   //   sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
-//   // buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
-//      sellToken: sellTokenAddress,
-//         buyToken: buyTokenAddress,
-//     // Note that the DAI token uses 18 decimal places, so `sellAmount` is `100 * 10^18`.
-//     sellAmount: ( sellAmount * 10 ** 18 ),
-//   takerAddress: account,
-//   // estimatedGas: "111000000",
-   
-//    };
  const params = {
      buyToken: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
     sellToken: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
@@ -226,24 +162,19 @@ try
       '0x-api-key': '1de2d124-1e69-41a7-9c1e-7ce3f16c25bf',
     } 
 
-    // Fetch the swap quote.
-          // const response = await fetch(
-          //     `https://goerli.api.0x.org/swap/v1/quote?${qs.stringify(params)}`, { headers }
-          // );
        const response = await fetch( `https://goerli.api.0x.org/swap/v1/quote?${ qs.stringify( params ) }`, { headers } );
 
 
-// console.log("Response =============>>>>>>>>>>>>>",await response.json()); 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+
 
    swapQuoteJSON = await response.json();
    console.log("swapquotejson with probleme 1 =========>>>>>>>>>>>>>>>>>>", swapQuoteJSON)
    setToAmount ( (swapQuoteJSON.buyAmount / (10 ** 18)))
    setEstimatedGas( swapQuoteJSON.estimatedGas )
-  //  setPrice(swapQuoteJSON.price)
+  
    
    
    console.log( "To Amount get quote=============>>>>>>>>>>>>>", toAmount );
-  //  console.log( "price get quote=============>>>>>>>>>>>>>", price );
       console.log("swapQuoteJSON get quote with probleme =============>>>>>>>>>>>>>",swapQuoteJSON);
 
 
@@ -268,8 +199,7 @@ async function trySwap(){
 
     const swapQuoteJSON = await getQuote( takerAddress );
   
-    // Set Token Allowance
-    // Set up approval amount
+  
     const fromTokenAddress = sellTokenAddress;
     const maxApproval = new BigNumber( 2 ).pow( 256 ).minus( 1 );
     console.log( "approval amount: ", maxApproval );
@@ -278,8 +208,7 @@ async function trySwap(){
     console.log( "swapQuoteJSON ===============>>>>>>>>>> ", swapQuoteJSON );
     console.log( "swapQuoteJSON  allowanceTarget: ===============>>>>>>>>>> ", swapQuoteJSON.allowanceTarget );
 
-    // Grant the allowance target an allowance to spend our tokens.
-    //web3.eth.defaultAccount = fromTokenAddress
+   
 
     const tx = await ERC20TokenContract.methods.approve(
       swapQuoteJSON.allowanceTarget,
@@ -365,11 +294,11 @@ async function trySwap(){
                           
                             <Stack direction='row'  >
                                               
-                                        {/* <p>Data from child component: {buyTokenAddress}</p> */}
+                                      
                                         
                             <SearchModal getTokenAddressData={handleSellFromSearchModel} ></SearchModal>
 
-                            {/* <Button variant={"unstyled"} width={"100%"} rightIcon={<StatDownArrow color={"pink.500"} ></StatDownArrow>} colorScheme="whiteAlpha" >Select </Button> */}
+        
 
                           
                               <Input onChange={getPrice} onBlur={e=> setSellamount(Number(e.target.value))} focusBorderColor="rgba(255, 255, 255, .0)" style={{  textAlign:"right" , border:"none", padding:"0"}} placeholder="0"></Input>
@@ -466,28 +395,10 @@ async function trySwap(){
                                                 <Button onClick={trySwap}  width={'100%'} colorScheme='pink' variant='solid'>
                                                         Swap
                                                 </Button> 
-                              {/* <button disabled={trySwap} onClick={() => trySwap?.()}>
-                                {isLoading ? 'Sending...' : 'Send'}
-                              </button>
-                              {isSuccess && (
-                                <div>
-                                  Successfully swaped
-                                </div>
-                              )} */}
+              
                                                 
                                                 
-                            
-                            {/* <Button type="submit" colorScheme="pink" disabled={!write || isLoading}>
-                                {isLoading ? 'Approving...' : 'Approve'}
-                              </Button>
-                              {isSuccess && (
-                                <div>
-                                  Successfully  Approved!
-                                </div>
-                              )}
-                              {(isPrepareError || isError) && (
-                                <div>Error: {(prepareError || error)?.message}</div>
-                              )} */}
+                        
                                               </Stack>
                                             
                                             </CardBody> 
