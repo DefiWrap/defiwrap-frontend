@@ -1,4 +1,6 @@
-.activelink {
-  background-color: #D53F8C !important; /* Set your desired background color */
-  color:white !important;
+.navItem {
+  text-decoration: none;
+  background: #d53f8c;
+  cursor: pointer;
+  color: #fff;
 }

@@ -37,6 +37,7 @@ import {
 } from "@chakra-ui/styled-system";
 import { listAnatomy as parts } from "@chakra-ui/anatomy";
 import { error } from "console";
+import { txt } from "../utils/constant";
 //  import data from './data.json';
 
 
@@ -214,7 +215,7 @@ export function SearchModal ({  getTokenAddressData  })
                 style={{ cursor: "pointer" }}
                 id={item.address}
               >
-                Select
+                {txt.select}
               </b>
             )}
           </Button> */}
@@ -231,7 +232,7 @@ export function SearchModal ({  getTokenAddressData  })
       >
         <ModalOverlay />
         <ModalContent w={600}>
-          <ModalHeader>You Pay</ModalHeader>
+          <ModalHeader>{txt.you_pay}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <InputGroup>
@@ -249,7 +250,7 @@ export function SearchModal ({  getTokenAddressData  })
             </InputGroup>
 
             <Text mt={5} mb={5} fontSize={"xl"}>
-              Token List
+              {txt.token_list}
             </Text>
 
             <List
@@ -290,7 +291,7 @@ export function SearchModal ({  getTokenAddressData  })
 
           <ModalFooter>
             <Button colorScheme="pink" onClick={onClose}>
-              Cancel
+              {txt.cancel}
             </Button>
           </ModalFooter>
         </ModalContent>
