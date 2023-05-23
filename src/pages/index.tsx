@@ -30,7 +30,7 @@ export default function Landing() {
                             <img  style={ { marginTop:"50px", borderStyle:"solid", borderRadius:"1rem",borderWidth:"5px", borderColor:"#EA4C89"} } width={ "80%" } src='./swap_new_final.png'></img>
                         </Flex>
                 </Card>
-                <Box className={styles.topmobilemargin} mt={'18rem'} mb={"70px"} w="80%" borderRadius={ "3xl" }> 
+                <Box className={styles.topmobilemargin} mt={'18rem'} mb={"70px"} w="100%" borderRadius={ "3xl" }> 
                         <Flex style={{display:"flex",flexDirection:"column", alignItems:"center", justifyContent:"center", marginTop:"100px"}} >
                             <Heading  color={"pink.500"}>Hight Impact Results</Heading>
                              <Heading textAlign={"center"} mt={3} size={"xl"}>Strategies Focused on Your Performance</Heading>
