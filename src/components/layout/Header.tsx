@@ -51,7 +51,7 @@ export function Header(props: Props) {
         // py={2}
         // mb={8}
         //pos="fixed"
-        h={85}
+        h={"tiny"}
         pos="sticky"
         w="full"
         alignItems="center"
@@ -108,7 +108,7 @@ export function Header(props: Props) {
 
 const DesktopNav = () => {
   const linkColor = useColorModeValue("gray.600", "gray.200");
-  const linkHoverColor = useColorModeValue("#fff", "white");
+  const linkHoverColor = useColorModeValue("white", "white");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
   const linkHoverBackgroundColor = useColorModeValue("pink.500", "pink.500");
   const router = useRouter();
@@ -137,9 +137,9 @@ const DesktopNav = () => {
                       router.pathname === navItem.href ? styles.navItem : ""
                     }
                     p={4}
-                    fontSize="1.125rem"
+                    fontSize="1rem"
                     _hover={{
-                      color: linkHoverColor,
+                      color: "white",
                       bg: linkHoverBackgroundColor,
                       rounded: "lg",
                       cursor: "pointer",
@@ -215,7 +215,7 @@ const MobileNav = () => {
     <Stack
       bg={useColorModeValue("white", "gray.800")}
       p={4}
-      display={{ md: "none" }}
+      // display={{ md: "none" }}
       _selected={{ color: "white", bg: "#D53F8C" }}
     >
       {NAV_ITEMS.map((navItem) => (
@@ -284,18 +284,6 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Home",
     href: "/",
-    children: [
-      {
-        label: 'Explore Decentralized Finance',
-        subLabel: 'Trending DeFi Apps to inspire you',
-        href: 'https://dappradar.com/rankings/category/defi',
-      },
-      {
-        label: 'View wallet balance',
-        subLabel: 'View your wallet full balance',
-        href: 'https://etherscan.io/',
-      },
-    ],
   },
   {
     label: "Positions",

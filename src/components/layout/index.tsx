@@ -1,8 +1,11 @@
 import React, { ReactNode } from "react";
 import { Box, Container, useColorModeValue } from "@chakra-ui/react";
 import { Header } from "./Header";
+// import { HeaderResponsive } from "./HeaderResponsive";
+
 import { Footer } from "./Footer";
 import { Head } from "./Head";
+import HeaderResponsive from './HeaderResponsive';
 interface Props {
   children: ReactNode;
 }
@@ -34,7 +37,8 @@ export function Layout(props: Props) {
           backgroundAttachment: "fixed",
         }}
       >
-        <Header />
+        {/* <Header /> */}
+        <HeaderResponsive></HeaderResponsive>
        {props.children}
         <Footer />
       </Box>
