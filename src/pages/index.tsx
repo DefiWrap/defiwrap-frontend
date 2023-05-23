@@ -16,7 +16,7 @@ export default function Landing() {
         <div className={styles.container}>
             <div className={ styles.main }>
                 <Card  h="700px" w="100%" backgroundImage={"./bg.jpg"} backgroundSize={"contain"} backgroundBlendMode={"darken"}  variant="outline" borderRadius={ "3xl" }> 
-                        <Flex style={{display:"flex",flexDirection:"column", alignItems:"center", justifyContent:"center", marginTop:"80px",margin:"1.5rem"}} >
+                        <Flex style={{display:"flex",flexDirection:"column", alignItems:"center", justifyContent:"center", marginTop:"100px",margin:"1.5rem"}} >
                             <Heading textAlign={"center"} color={"pink.500"} >Better Investment Metrics</Heading>
                              <Heading textAlign={"center"} size={"xl"}> Streamline Your Investments with a Diverse DEX Portfolio</Heading>
                              <Heading textAlign={"center"} mt={4} size={"md"}> Simplify Your Investment Strategy with Decentralized Dollar-Cost Averaging </Heading>
@@ -30,13 +30,13 @@ export default function Landing() {
                             <img  style={ { marginTop:"50px", borderStyle:"solid", borderRadius:"1rem",borderWidth:"5px", borderColor:"#EA4C89"} } width={ "80%" } src='./swap_new_final.png'></img>
                         </Flex>
                 </Card>
-                <Box className={styles.topmobilemargin} mt={'18rem'} mb={"70px"} w="100%" borderRadius={ "3xl" }> 
+                <Box className={styles.topmobilemargin} mt={'20rem'} mb={"70px"} w="100%" borderRadius={ "3xl" }> 
                         <Flex style={{display:"flex",flexDirection:"column", alignItems:"center", justifyContent:"center", marginTop:"100px"}} >
                             <Heading  color={"pink.500"}>Hight Impact Results</Heading>
                              <Heading textAlign={"center"} mt={3} size={"xl"}>Strategies Focused on Your Performance</Heading>
                              <Heading textAlign={"center"} mt={4} size={"md"}>We help our clients achieve tangible, high-impact results.</Heading>
                         </Flex>
-                        <SimpleGrid spacing={4} mt={"30px"}  templateColumns='repeat(auto-fill, minmax(280px, 1fr))'>
+                        <SimpleGrid display={"flex"} flexDirection={"row"} flexWrap={"wrap"} spacing={4} mt={"30px"} >
                             <Card borderRadius={"xl"} >
                                 <CardBody style={{display:"flex",flexDirection:"column", alignItems:"center", justifyContent:"center"}} >
                                    <Heading color="pink.500" size='xl'><FaMoneyCheck></FaMoneyCheck></Heading>

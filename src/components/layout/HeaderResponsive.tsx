@@ -173,7 +173,8 @@ const DesktopNav = () => {
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
     <Link
-      href={href}
+          href={ href }
+          
       role={'group'}
       display={'block'}
       p={2}
@@ -187,7 +188,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
             fontWeight={500}>
             {label}
           </Text>
-          <Text fontSize={'sm'}>{subLabel}</Text>
+          <Text fontSize={'md'}>{subLabel}</Text>
         </Box>
         <Flex
           transition={'all .3s ease'}
@@ -276,8 +277,27 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Landing",
+    label: "Home",
     href: "/",
+    },
+  {
+    label: "invest",
+      href: "/invest",
+    
+      children: [
+      {
+        label: "Positions",
+        href: "/positions",
+      },
+      {
+            label: "Details",
+            href: "/positionsdetail",
+      },
+    ],
+    },
+   {
+    label: "Swap",
+    href: "/swap",
   },
   {
     label: "Positions",
@@ -287,12 +307,6 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Details",
     href: "/positionsdetail",
   },
-  {
-    label: "Swap",
-    href: "/swap",
-  },
-  {
-    label: "invest",
-    href :"/invest"
-  },
+ 
+  
 ];

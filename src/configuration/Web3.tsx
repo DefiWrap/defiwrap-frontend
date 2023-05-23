@@ -1,17 +1,8 @@
 import '@rainbow-me/rainbowkit/styles.css'
 import merge from 'lodash.merge';
-// import
-//   {
-  
-//   RainbowKitProvider,
-//   darkTheme,
-//     Theme,
-//   getDefaultWallets
-// } from '@rainbow-me/rainbowkit';
-// import { getDefaultWallets, RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit'
 import { configureChains, createClient, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { ReactNode, useEffect } from 'react'
+import { ReactNode } from 'react'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { NETWORKS, INFURA_KEY, SITE_NAME } from '../configuration/Config'
 import React from 'react'
@@ -47,9 +38,6 @@ const myTheme = merge(darkTheme(), {
 interface Props {
   children: ReactNode
 }
-
-
-
 
 
 export function Web3Provider ( props: Props )
@@ -92,7 +80,8 @@ const { chains, provider } = configureChains(NETWORKS, [ infuraProvider( { apiKe
 //   chains,
 // })
   
-    const connectors = connectorsForWallets([
+  const connectors = connectorsForWallets( [
+      
         popularWallets,
         {
             groupName: 'Other',

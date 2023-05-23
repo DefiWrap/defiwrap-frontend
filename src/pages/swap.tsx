@@ -121,7 +121,7 @@ try
     const headers =
     
     {
-        '0x-api-key' :  '1de2d124-1e69-41a7-9c1e-7ce3f16c25bf'
+        '0x-api-key' :  process.env.NEXT_PUBLIC_PROJECT_ID
     } 
 
     // Fetch the swap price.
@@ -159,7 +159,7 @@ try
     const headers =
     
     {
-      '0x-api-key': '1de2d124-1e69-41a7-9c1e-7ce3f16c25bf',
+      '0x-api-key': process.env.NEXT_PUBLIC_PROJECT_ID,
     } 
 
        const response = await fetch( `https://goerli.api.0x.org/swap/v1/quote?${ qs.stringify( params ) }`, { headers } );

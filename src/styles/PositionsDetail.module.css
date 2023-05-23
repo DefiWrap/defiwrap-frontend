@@ -6,8 +6,7 @@
      
 }
 .main {
-  min-height: 100vh;
-  min-width: 100vh;
+
   margin-top: 2rem;
   flex: 1;
   display: flex;
