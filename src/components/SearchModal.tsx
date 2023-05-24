@@ -17,6 +17,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  StatDownArrow,
   Text,
   useColorModeValue,
   useDisclosure,
@@ -39,6 +40,7 @@ import { error } from "console";
 import { txt } from "../utils/constant";
 //  import data from './data.json';
 
+
 // console.log("data is ==========>>>>>>",data)
 
 const { definePartsStyle, defineMultiStyleConfig } =
@@ -57,33 +59,39 @@ const sizes = {
   }),
 };
 
-export function SearchModal({ getTokenAddressData }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const initialRef = React.useRef(null);
-  const finalRef = React.useRef(null);
+export function SearchModal ({  getTokenAddressData  })
+{
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [tokens, setTokens] = useState([]);
+  const initialRef = React.useRef(null)
+  const finalRef = React.useRef(null)
+
+
+ 
+  const [tokens, setTokens] = useState([])
+
+  
 
   useEffect(() => {
     const dataFetch = async () => {
-      try {
-        const response = await fetch(
-          "https://tokens.coingecko.com/uniswap/all.json"
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setTokens(data);
-      } catch (error) {
-        console.error("There was a problem fetching data:", error);
-      }
-    };
+  try {
+    const response = await fetch("https://tokens.coingecko.com/uniswap/all.json");
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    setTokens(data);
+  } catch (error) {
+    console.error('There was a problem fetching data:', error);
+  }
+};
 
     dataFetch();
-    // console.log("data ========>>>>>>",tokens)
+           // console.log("data ========>>>>>>",tokens)
+
   }, [tokens]);
+
 
   // Define a function to render the search result on the page
   const [query, setQuery] = useState("");
@@ -104,15 +112,19 @@ export function SearchModal({ getTokenAddressData }) {
 
   // setToToken( tokens )
 
-  function handleChange(event: any) {
-    const newQuery = event.target.value;
-    setQuery(newQuery);
-    const newResults = tokens.tokens.filter(
-      (item) => item.name.toLowerCase().includes(newQuery.toLowerCase())
-      //  &&
-      //  item.chainId== 1
-    );
-    setResults(newResults);
+  function handleChange ( event: any )
+      {
+        
+        
+        const newQuery = event.target.value;
+        setQuery(newQuery);
+        const newResults = tokens.tokens.filter(item =>
+          item.name.toLowerCase().includes( newQuery.toLowerCase() )
+          //  &&
+          //  item.chainId== 1
+        );
+        setResults( newResults );
+        
   }
   function listViewClick(e: any) {
     try {
@@ -141,11 +153,42 @@ export function SearchModal({ getTokenAddressData }) {
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             textAlign: "center",
           }}
         >
           <Button
+            onClick={ onOpen }
+            leftIcon={
+              <img
+                style={{ borderRadius: "50%" }}
+                height={18}
+                width={18}
+                src={item.logoURI}
+              ></img>
+            }
+            variant={ "unstyled" } width={ "100%" } rightIcon={ <StatDownArrow color={ "pink.500" } ></StatDownArrow> } colorScheme="whiteAlpha" >
+            
+                       {item.symbol ? (
+              <b
+                onClick={listViewClick}
+                style={{ cursor: "pointer" }}
+                id={item.address}
+              >
+                {item.symbol}
+              </b>
+            ) : (
+              <b
+                onClick={onOpen}
+                style={{ cursor: "pointer" }}
+                id={item.address}
+              >
+                Select
+              </b>
+            )}
+          </Button>
+
+          {/* <Button
             onClick={onOpen}
             leftIcon={
               <img
@@ -175,9 +218,9 @@ export function SearchModal({ getTokenAddressData }) {
                 {txt.select}
               </b>
             )}
-          </Button>
+          </Button> */}
 
-          <Text fontSize="sm">{item.name}</Text>
+          {/* <Text fontSize="sm">{item.name}</Text> */}
         </div>
       ))}
 

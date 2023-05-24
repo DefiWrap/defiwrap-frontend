@@ -1,5 +1,5 @@
 import { ThemingProps } from '@chakra-ui/react'
-import { mainnet, goerli, bsc, bscTestnet } from '@wagmi/chains'
+import { mainnet, goerli, bsc, bscTestnet, polygonMumbai } from '@wagmi/chains'
 import { StepsTheme as Steps } from "chakra-ui-steps";
 
 
@@ -18,4 +18,4 @@ export const SOCIAL_LINKEDIN = '#'
 export const SOCIAL_DISCORD = '#'
 
 export const INFURA_KEY = process.env.NEXT_PUBLIC_INFURA_KEY
-export const NETWORKS = [mainnet, goerli, bsc ,bscTestnet]
+export const NETWORKS = [mainnet, goerli, bsc ,bscTestnet, polygonMumbai]

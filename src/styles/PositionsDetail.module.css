@@ -5,10 +5,8 @@
   align-items: center;
      
 }
-
 .main {
-  min-height: 100vh;
-  min-width: 100vh;
+
   margin-top: 2rem;
   flex: 1;
   display: flex;
@@ -48,8 +46,6 @@
     
     /* align-items: center; */
 }
-
-
 .mytab{
     
     border-width: 0px;
