@@ -32,6 +32,8 @@ import {
   Tooltip,
   YAxis,
   Legend,
+  Area,
+  ComposedChart,
 } from "recharts";
 
 import chainlist from "../../data/chains.json";
@@ -99,7 +101,7 @@ const Home: NextPage = () => {
 
   const chart = (interval: any) => (
     <ResponsiveContainer height={500} width={800}>
-      <LineChart data={chartData} margin={{ right: 15, top: 10 }} style={{ overflow: "visible" }}
+      <ComposedChart data={chartData} margin={{ right: 15, top: 10 }} style={{ overflow: "visible" }}
         onMouseMove={({ activePayload }) => {
           console.log('activePayload :>> ', activePayload)
           activePayload && setOnHoverTokenDetail(activePayload)
@@ -107,13 +109,18 @@ const Home: NextPage = () => {
         }
       >
         <Tooltip cursor={{ fill: "#f00" }} />
-        <Legend />
-        <Line
+        <Legend  />
+        <Area
           legendType="none"
+          name="price"
           type="monotone"
+          connectNulls
           dataKey="price"
+          fill="#d53f8c36"
+          strokeWidth="2px"
+          dot
+          activeDot
           stroke="#3182CE"
-          activeDot={{ r: 8 }}
         />
         <YAxis
           strokeWidth="0px"
@@ -123,7 +130,7 @@ const Home: NextPage = () => {
           hide
         />
         <XAxis dataKey="timestamp" interval={interval} />
-      </LineChart>
+      </ComposedChart>
     </ResponsiveContainer>
   );
 
@@ -895,12 +902,12 @@ const Home: NextPage = () => {
                     {" "}
                     ●{" "}
                   </Heading>{" "}
-                  <Text>{txt.defiWrap}</Text>{" "}
-                  <Heading color={"green.500"} pl={5} size="md" pr={1}>
+                    <Text>{txt.defiLlama}</Text>{" "}
+                  {/* <Heading color={"green.500"} pl={5} size="md" pr={1}>
                     {" "}
                     ●{" "}
                   </Heading>{" "}
-                  <Text>{txt.defiLlama}</Text>
+                  <Text>{txt.defiWrap}</Text> */}
                 </Stack>
 
                 {chart("preserveStart")}
