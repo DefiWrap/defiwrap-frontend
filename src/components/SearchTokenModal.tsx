@@ -65,6 +65,7 @@ export function SearchTokenModal({
   setSelectedReceiveDetail,
   selectedReceiveDetail,
   isSell,
+  setIsClose,
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef(null);
@@ -107,7 +108,8 @@ export function SearchTokenModal({
       ? (setSelectedSellDetail(selectedSellDetail),
         setTokenQry(selectedSellDetail))
       : (setSelectedReceiveDetail(selectedReceiveDetail),
-        setTokenQry(selectedReceiveDetail));
+        setTokenQry(selectedReceiveDetail),
+        setIsClose(false));
   }, [selectedSellDetail, selectedReceiveDetail]);
 
   const ButtonValue = () => {
@@ -165,7 +167,9 @@ export function SearchTokenModal({
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          onClose(), !isSell && setIsClose(true);
+        }}
       >
         <ModalOverlay />
         <ModalContent w={600}>

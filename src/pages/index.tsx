@@ -59,13 +59,19 @@ const Home: NextPage = () => {
   const [chains, setChains] = useState(chainlist);
   const [chainTokenList, setChainTokenList] = useState([]);
   const [onSelectNetwork, setOnSelectNetwork] = useState(chainlist[0]);
+  const [onSelectNetworkError, setOnSelectNetworkError] = useState(false);
   const [onChangeProtocol, setOnChangeProtocol] = useState();
+  const [onChangeProtocolError, setOnChangeProtocolError] = useState(false);
   const [investValue, setInvestValue] = useState();
+  const [investValueError, setInvestValueError] = useState();
   const [executesDay, setExecutesDay] = useState(executesTimeArray[0]);
   const [executesDuration, setexecutesDuration] = useState();
+  const [executesDurationError, setexecutesDurationError] = useState();
   const [isContinue, setIsContinue] = useState(false);
   const [selectedSellDetail, setSelectedSellDetail] = useState({});
   const [selectedReceiveDetail, setSelectedReceiveDetail] = useState({});
+  const [selectedReceiveDetailError, setSelectedReceiveDetailError] =
+    useState();
 
   // validations
   const {
@@ -216,7 +222,7 @@ const Home: NextPage = () => {
   return (
     <>
       <div className={styles.container}>
-        <main className={styles.main}>
+        <main className={styles.main} style={{ alignItems: "flex-start" }}>
           <Card minWidth="450px" maxW="md">
             <CardBody>
               <Flex>
@@ -245,12 +251,18 @@ const Home: NextPage = () => {
                                   }
                                   focusBorderColor="pink.400"
                                   placeholder={txt.select_option}
-                                  {...register("name", {
-                                    required: "Please select the network",
-                                  })}
+                                  onBlur={() => {
+                                    setOnSelectNetworkError(
+                                      !onSelectNetwork ? true : false
+                                    );
+                                  }}
                                   onChange={(event: any) => {
-                                    setOnSelectNetwork(
-                                      JSON.parse(event.target.value)
+                                    event?.target?.value ??
+                                      setOnSelectNetwork(
+                                        JSON.parse(event?.target?.value)
+                                      );
+                                    setOnSelectNetworkError(
+                                      !event?.target?.value ? true : false
                                     );
                                   }}
                                 >
@@ -260,7 +272,6 @@ const Home: NextPage = () => {
                                       key={item.chainId}
                                       value={JSON.stringify(item)}
                                     >
-                                      {" "}
                                       <img
                                         style={{
                                           width: "50px",
@@ -273,14 +284,11 @@ const Home: NextPage = () => {
                                     </option>
                                   ))}
                                 </Select>
-                                {errors.name && (
+                                {onSelectNetworkError && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
                                 )}
-                                {/* <FormErrorMessage>
-                                  <Text> {errors.name}</Text>
-                                </FormErrorMessage> */}
                                 <Heading mt={5} mb="8px" size="sm">
                                   {txt.choose_protocol}
                                 </Heading>
@@ -292,11 +300,16 @@ const Home: NextPage = () => {
                                   }
                                   focusBorderColor="pink.400"
                                   placeholder={txt.select_option}
-                                  {...register("protocol", {
-                                    required: "Please select the protocol",
-                                  })}
+                                  onBlur={() => {
+                                    setOnChangeProtocolError(
+                                      !onChangeProtocol ? true : false
+                                    );
+                                  }}
                                   onChange={(event: any) => {
                                     setOnChangeProtocol(event.target.value);
+                                    setOnChangeProtocolError(
+                                      !event?.target?.value ? true : false
+                                    );
                                   }}
                                 >
                                   {protocol.map((item, index) => (
@@ -317,7 +330,7 @@ const Home: NextPage = () => {
                                     </option>
                                   ))}
                                 </Select>
-                                {errors.protocol && (
+                                {onChangeProtocolError && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
@@ -389,16 +402,29 @@ const Home: NextPage = () => {
                                       selectedReceiveDetail={
                                         selectedReceiveDetail
                                       }
+                                      setIsClose={(value: any) => {
+                                        console.log("value :>> ", value);
+                                        if (value) {
+                                          setSelectedReceiveDetailError(
+                                            !selectedReceiveDetail.address
+                                              ? false
+                                              : true
+                                          );
+                                        } else {
+                                          setSelectedReceiveDetailError(true);
+                                        }
+                                      }}
                                     ></SearchTokenModal>
-                                    {isContinue && !buyTokenAddress && (
-                                      <Text
-                                        fontSize="xs"
-                                        color="red"
-                                        textAlign="right"
-                                      >
-                                        {txt.required_error}
-                                      </Text>
-                                    )}
+                                    {!buyTokenAddress &&
+                                      selectedReceiveDetailError == false && (
+                                        <Text
+                                          fontSize="xs"
+                                          color="red"
+                                          textAlign="right"
+                                        >
+                                          {txt.required_error}
+                                        </Text>
+                                      )}
                                   </Stack>
                                 </Stack>
                               </CardBody>
@@ -437,19 +463,20 @@ const Home: NextPage = () => {
                                       }
                                     />
                                     <Input
+                                      onBlur={() => {
+                                        setInvestValueError(
+                                          !investValue ? false : true
+                                        );
+                                      }}
                                       focusBorderColor="pink.400"
                                       errorBorderColor="red.300"
                                       type="number"
-                                      {...register("invest", {
-                                        required:
-                                          "Please select the invest value",
-                                      })}
                                       placeholder="0"
+                                      value={investValue}
                                       onChange={(event: any) => {
                                         setInvestValue(event.target.value);
-                                        console.log(
-                                          "InvestValue value :>> ",
-                                          event.target.value
+                                        setInvestValueError(
+                                          !event.target.value ? false : true
                                         );
                                       }}
                                     />
@@ -487,7 +514,7 @@ const Home: NextPage = () => {
                                     {txt.half}
                                   </Button>
                                 </Stack>
-                                {!investValue && errors.invest && (
+                                {investValueError == false && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
@@ -552,6 +579,11 @@ const Home: NextPage = () => {
                                   spacing={4}
                                 >
                                   <Input
+                                    onBlur={() => {
+                                      setexecutesDurationError(
+                                        executesDuration ? true : false
+                                      );
+                                    }}
                                     focusBorderColor="pink.400"
                                     errorBorderColor="red.300"
                                     colorScheme="pink"
@@ -561,15 +593,21 @@ const Home: NextPage = () => {
                                     onChange={(e: any) => {
                                       console.log("value", e.target.value);
                                       setexecutesDuration(e.target.value);
+                                      setexecutesDurationError(
+                                        e.target.value ? true : false
+                                      );
                                     }}
                                   />
                                   {duration.map((item) => {
                                     return (
                                       <Button
                                         key={item.value}
-                                        onClick={() =>
-                                          setexecutesDuration(item?.value)
-                                        }
+                                        onClick={() => {
+                                          setexecutesDuration(item?.value);
+                                          setexecutesDurationError(
+                                            item?.value ? true : false
+                                          );
+                                        }}
                                         colorScheme={
                                           executesDuration == item.value
                                             ? "pink"
@@ -582,7 +620,7 @@ const Home: NextPage = () => {
                                     );
                                   })}
                                 </Stack>
-                                {isContinue && !executesDuration && (
+                                {executesDurationError == false && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
@@ -623,7 +661,13 @@ const Home: NextPage = () => {
                                         <Button
                                           type="submit"
                                           width={"100%"}
-                                          colorScheme="pink"
+                                          colorScheme={
+                                            !executesDurationError ||
+                                            !investValueError ||
+                                            !selectedReceiveDetailError
+                                              ? "gray"
+                                              : "pink"
+                                          }
                                           variant={"solid"}
                                           onClick={() =>
                                             !isLastStep && setIsContinue(true)
