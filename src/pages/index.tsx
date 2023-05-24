@@ -30,6 +30,8 @@ import {
   XAxis,
   CartesianGrid,
   Tooltip,
+  YAxis,
+  Legend,
 } from "recharts";
 
 import chainlist from "../../data/chains.json";
@@ -42,10 +44,12 @@ import { useForm } from "react-hook-form";
 import { DateTime } from "luxon";
 import { ApiService } from "../apiService/api";
 import { duration, executesTimeArray, timeArray, txt } from "../utils/constant";
+import { useAccount } from "wagmi";
 
 const steps = [{ label: "Step 1" }, { label: "Step 2" }];
 
 const Home: NextPage = () => {
+  const { isConnected } = useAccount();
   const [sellTokenAddress, setSellTokenAddress] = useState("");
   const [buyTokenAddress, setBuyTokenAddress] = useState("");
   const [buyToken, setBuyToken] = useState("");
@@ -70,6 +74,7 @@ const Home: NextPage = () => {
   const [isContinue, setIsContinue] = useState(false);
   const [selectedSellDetail, setSelectedSellDetail] = useState({});
   const [selectedReceiveDetail, setSelectedReceiveDetail] = useState({});
+  const [onHoverTokenDetail, setOnHoverTokenDetail] = useState([]);
   const [selectedReceiveDetailError, setSelectedReceiveDetailError] =
     useState();
 
@@ -94,19 +99,30 @@ const Home: NextPage = () => {
 
   const chart = (interval: any) => (
     <ResponsiveContainer height={500} width={800}>
-      <LineChart data={chartData} margin={{ right: 15, top: 10 }}>
-        <CartesianGrid stroke="#" />
-        {/* <Legend /> */}
+      <LineChart data={chartData} margin={{ right: 15, top: 10 }} style={{ overflow: "visible" }}
+        onMouseMove={({ activePayload }) => {
+          console.log('activePayload :>> ', activePayload)
+          activePayload && setOnHoverTokenDetail(activePayload)
+        }
+        }
+      >
         <Tooltip cursor={{ fill: "#f00" }} />
-        <XAxis dataKey="timestamp" interval={interval} />
-        {/* <YAxis interval={interval} /> */}
+        <Legend />
         <Line
+          legendType="none"
           type="monotone"
           dataKey="price"
           stroke="#3182CE"
           activeDot={{ r: 8 }}
         />
-        <Line type="monotone" dataKey="price" stroke="#82ca9d" />
+        <YAxis
+          strokeWidth="0px"
+          domain={["auto", "auto"]}
+          axisLine={false}
+          tickLine={false}
+          hide
+        />
+        <XAxis dataKey="timestamp" interval={interval} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -144,8 +160,8 @@ const Home: NextPage = () => {
       activeChartTime == 1
         ? "period=1h&span=24"
         : activeChartTime == 2
-        ? "period=4h&span=42"
-        : "period=1d&span=30";
+          ? "period=4h&span=42"
+          : "period=1d&span=30";
     setSellTokenAddress(
       sellTokenAddress ? sellTokenAddress : chainTokenList[0]?.address
     );
@@ -500,14 +516,14 @@ const Home: NextPage = () => {
                                     />
                                   </InputGroup>
                                   <Button
-                                    isDisabled
+                                    isDisabled={isConnected ? false : true}
                                     colorScheme="pink"
                                     variant="outline"
                                   >
                                     {txt.max}
                                   </Button>
                                   <Button
-                                    isDisabled
+                                    isDisabled={isConnected ? false : true}
                                     colorScheme="pink"
                                     variant="outline"
                                   >
@@ -568,7 +584,7 @@ const Home: NextPage = () => {
                                   spacing={4}
                                 >
                                   <Heading mb="8px" size="sm">
-                                    {txt.how_many_day}
+                                    {txt.how_many}
                                     {executesDay.value}
                                     {"?"}
                                   </Heading>
@@ -663,8 +679,8 @@ const Home: NextPage = () => {
                                           width={"100%"}
                                           colorScheme={
                                             !executesDurationError ||
-                                            !investValueError ||
-                                            !selectedReceiveDetailError
+                                              !investValueError ||
+                                              !selectedReceiveDetailError
                                               ? "gray"
                                               : "pink"
                                           }
@@ -822,7 +838,7 @@ const Home: NextPage = () => {
               }}
             >
               <Text color="grey" as="b" fontSize="2xl">
-                Select a pair to view its price history
+                {txt.select_a_pair_to_view_its_price_history}
               </Text>
             </Card>
           ) : (
@@ -836,7 +852,7 @@ const Home: NextPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Heading size={"lg"}>$1906.36 USD</Heading>
+                    <Heading size={"lg"}>{'$'}{onHoverTokenDetail[0] ? onHoverTokenDetail[0]?.payload?.price : '00.00'}</Heading>
                   <Stack
                     style={{
                       display: "flex",
