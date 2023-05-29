@@ -49,6 +49,7 @@ import { duration, executesTimeArray, timeArray, txt } from "../utils/constant";
 import { useAccount } from "wagmi";
 import context from "../context/context";
 import { useRouter } from "next/router";
+import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 
 
 const steps = [{ label: "Step 1" }, { label: "Step 2" }];
@@ -85,6 +86,19 @@ const Home: NextPage = () => {
   const [onHoverTokenDetail, setOnHoverTokenDetail] = useState([]);
   const [selectedReceiveDetailError, setSelectedReceiveDetailError] =
     useState();
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+    abi: [
+      {
+        name: 'mint',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [],
+        outputs: [],
+      },
+    ],
+    functionName: 'mint',
+  })
 
   // validations
   const {
@@ -270,7 +284,7 @@ const Home: NextPage = () => {
       <div className={styles.container}>
         <main className={styles.main} style={{ alignItems: "flex-start" }}>
           <Card minWidth="450px" maxW="md">
-
+          <Button onClick={()=>write()} style={{color:'red'}}>Check UseContract Function</Button>
             <CardBody>
               <Flex>
                 <form onSubmit={handleSubmit(onSubmit)}>
