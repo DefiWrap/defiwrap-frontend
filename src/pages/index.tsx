@@ -22,7 +22,7 @@ import {
 import { MdSwapHorizontalCircle } from "react-icons/md";
 import { SearchTokenModal } from "../components/SearchTokenModal";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext ,useId  } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -47,16 +47,22 @@ import { DateTime } from "luxon";
 import { ApiService } from "../apiService/api";
 import { duration, executesTimeArray, timeArray, txt } from "../utils/constant";
 import { useAccount } from "wagmi";
+import context from "../context/context";
+import { useRouter } from "next/router";
+
 
 const steps = [{ label: "Step 1" }, { label: "Step 2" }];
 
 const Home: NextPage = () => {
+  const router = useRouter();
+  const cardId = useId()
   const { isConnected } = useAccount();
+  const appContext = useContext(context);
   const [sellTokenAddress, setSellTokenAddress] = useState("");
   const [buyTokenAddress, setBuyTokenAddress] = useState("");
   const [buyToken, setBuyToken] = useState("");
   const [buyTokenImg, setbuyTokenImg] = useState("");
-  const [sellAmount, setSellamount] = useState(0);
+  const [currentSellAmount, setCurrentSellamount] = useState(0);
   const [sellToken, setSellToken] = useState("");
   const [sellTokenImg, setSellTokenImg] = useState("");
   const [activeChartTime, setActiveChartTime] = useState(timeArray[0].id);
@@ -103,13 +109,12 @@ const Home: NextPage = () => {
     <ResponsiveContainer height={500} width={800}>
       <ComposedChart data={chartData} margin={{ right: 15, top: 10 }} style={{ overflow: "visible" }}
         onMouseMove={({ activePayload }) => {
-          console.log('activePayload :>> ', activePayload)
           activePayload && setOnHoverTokenDetail(activePayload)
         }
         }
       >
         <Tooltip cursor={{ fill: "#f00" }} />
-        <Legend  />
+        <Legend />
         <Area
           legendType="none"
           name="price"
@@ -149,7 +154,9 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     protocolsFetch();
+
   }, [chains, protocol]);
+
 
   useEffect(() => {
     setSellTokenAddress(selectedSellDetail?.address);
@@ -192,7 +199,7 @@ const Home: NextPage = () => {
 
   const getCurrentTokenPrice = async (sellValue: any) => {
     ApiService.getTokenCurrentPrice(sellValue).then(async (response: any) => {
-      setSellamount(response.coins[`bsc:${sellValue}`]?.price);
+      setCurrentSellamount(response.coins[`bsc:${sellValue}`]?.price);
     });
   };
   const tokenListFetch = async (value: String) => {
@@ -241,12 +248,29 @@ const Home: NextPage = () => {
     setSelectedReceiveDetail(sell);
     setSelectedSellDetail(receive);
   };
-
+  const createPosition = () => {
+  
+    const value: any = {
+      cardId: cardId,
+      sellDetail: selectedSellDetail,
+      receiveDetail: selectedReceiveDetail,
+      investValue: investValue,
+      currentSellAmount: currentSellAmount,
+      executesDay: executesDay.value,
+      executesDuration: executesDuration
+    }
+    
+    let item =[...appContext?.activePositionList,value]
+    appContext.setactivePositionList(item)
+      router.push('./positions')
+   
+  }
   return (
     <>
       <div className={styles.container}>
         <main className={styles.main} style={{ alignItems: "flex-start" }}>
           <Card minWidth="450px" maxW="md">
+
             <CardBody>
               <Flex>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -280,7 +304,7 @@ const Home: NextPage = () => {
                                     );
                                   }}
                                   onChange={(event: any) => {
-                                    event?.target?.value ??
+                                    event?.target?.value &&
                                       setOnSelectNetwork(
                                         JSON.parse(event?.target?.value)
                                       );
@@ -349,6 +373,7 @@ const Home: NextPage = () => {
                                         }}
                                         src={item.logoURI}
                                       ></img>
+
                                       {item.name}
                                     </option>
                                   ))}
@@ -426,7 +451,6 @@ const Home: NextPage = () => {
                                         selectedReceiveDetail
                                       }
                                       setIsClose={(value: any) => {
-                                        console.log("value :>> ", value);
                                         if (value) {
                                           setSelectedReceiveDetailError(
                                             !selectedReceiveDetail.address
@@ -509,7 +533,7 @@ const Home: NextPage = () => {
                                       textAlign="left"
                                     >
                                       {"$"}
-                                      {sellAmount * (investValue || 1)}
+                                      {currentSellAmount * (investValue || 1)}
                                     </Text>
                                     <InputLeftElement
                                       pointerEvents="none"
@@ -614,7 +638,6 @@ const Home: NextPage = () => {
                                     type="number"
                                     value={executesDuration}
                                     onChange={(e: any) => {
-                                      console.log("value", e.target.value);
                                       setexecutesDuration(e.target.value);
                                       setexecutesDurationError(
                                         e.target.value ? true : false
@@ -752,7 +775,7 @@ const Home: NextPage = () => {
                                     colorScheme="pink"
                                     variant="outline"
                                   >
-                                    {sellAmount * (investValue || 1)}
+                                    {currentSellAmount * (investValue || 1)}
                                   </Button>
                                 </Stack>
                                 <Stack
@@ -776,7 +799,7 @@ const Home: NextPage = () => {
                                     colorScheme="pink"
                                     variant="outline"
                                   >
-                                    {(sellAmount * (investValue || 1)) /
+                                    {(currentSellAmount * (investValue || 1)) /
                                       (executesDuration || 1)}
                                   </Button>
                                 </Stack>
@@ -804,7 +827,7 @@ const Home: NextPage = () => {
                               <CardBody borderRadius="lg">
                                 <Button
                                   isDisabled={activeStep === 0}
-                                  // onClick={prevStep}
+                                  onClick={() => createPosition()}
                                   width={"100%"}
                                   colorScheme="pink"
                                   variant={"solid"}
@@ -859,7 +882,7 @@ const Home: NextPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                    <Heading size={"lg"}>{'$'}{onHoverTokenDetail[0] ? onHoverTokenDetail[0]?.payload?.price : '00.00'}</Heading>
+                  <Heading size={"lg"}>{'$'}{onHoverTokenDetail[0] ? onHoverTokenDetail[0]?.payload?.price : '00.00'}</Heading>
                   <Stack
                     style={{
                       display: "flex",
@@ -902,7 +925,7 @@ const Home: NextPage = () => {
                     {" "}
                     ●{" "}
                   </Heading>{" "}
-                    <Text>{txt.defiLlama}</Text>{" "}
+                  <Text>{txt.defiLlama}</Text>{" "}
                   {/* <Heading color={"green.500"} pl={5} size="md" pr={1}>
                     {" "}
                     ●{" "}
