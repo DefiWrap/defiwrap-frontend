@@ -22,7 +22,7 @@ import {
 import { MdSwapHorizontalCircle } from "react-icons/md";
 import { SearchTokenModal } from "../components/SearchTokenModal";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext ,useId  } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -30,6 +30,10 @@ import {
   XAxis,
   CartesianGrid,
   Tooltip,
+  YAxis,
+  Legend,
+  Area,
+  ComposedChart,
 } from "recharts";
 
 import chainlist from "../../data/chains.json";
@@ -42,15 +46,23 @@ import { useForm } from "react-hook-form";
 import { DateTime } from "luxon";
 import { ApiService } from "../apiService/api";
 import { duration, executesTimeArray, timeArray, txt } from "../utils/constant";
+import { useAccount } from "wagmi";
+import context from "../context/context";
+import { useRouter } from "next/router";
+
 
 const steps = [{ label: "Step 1" }, { label: "Step 2" }];
 
 const Home: NextPage = () => {
+  const router = useRouter();
+  const cardId = useId()
+  const { isConnected } = useAccount();
+  const appContext = useContext(context);
   const [sellTokenAddress, setSellTokenAddress] = useState("");
   const [buyTokenAddress, setBuyTokenAddress] = useState("");
   const [buyToken, setBuyToken] = useState("");
   const [buyTokenImg, setbuyTokenImg] = useState("");
-  const [sellAmount, setSellamount] = useState(0);
+  const [currentSellAmount, setCurrentSellamount] = useState(0);
   const [sellToken, setSellToken] = useState("");
   const [sellTokenImg, setSellTokenImg] = useState("");
   const [activeChartTime, setActiveChartTime] = useState(timeArray[0].id);
@@ -59,10 +71,21 @@ const Home: NextPage = () => {
   const [chains, setChains] = useState(chainlist);
   const [chainTokenList, setChainTokenList] = useState([]);
   const [onSelectNetwork, setOnSelectNetwork] = useState(chainlist[0]);
+  const [onSelectNetworkError, setOnSelectNetworkError] = useState(false);
   const [onChangeProtocol, setOnChangeProtocol] = useState();
+  const [onChangeProtocolError, setOnChangeProtocolError] = useState(false);
   const [investValue, setInvestValue] = useState();
+  const [investValueError, setInvestValueError] = useState();
   const [executesDay, setExecutesDay] = useState(executesTimeArray[0]);
   const [executesDuration, setexecutesDuration] = useState();
+  const [executesDurationError, setexecutesDurationError] = useState();
+  const [isContinue, setIsContinue] = useState(false);
+  const [selectedSellDetail, setSelectedSellDetail] = useState({});
+  const [selectedReceiveDetail, setSelectedReceiveDetail] = useState({});
+  const [onHoverTokenDetail, setOnHoverTokenDetail] = useState([]);
+  const [selectedReceiveDetailError, setSelectedReceiveDetailError] =
+    useState();
+
   // validations
   const {
     handleSubmit,
@@ -71,7 +94,6 @@ const Home: NextPage = () => {
   } = useForm();
 
   function onSubmit(values: any) {
-    console.log("values :>> ", values);
     return new Promise((resolve) => {
       if (values && buyToken) nextStep(1);
     });
@@ -85,35 +107,37 @@ const Home: NextPage = () => {
 
   const chart = (interval: any) => (
     <ResponsiveContainer height={500} width={800}>
-      <LineChart data={chartData} margin={{ right: 15, top: 10 }}>
-        <CartesianGrid stroke="#" />
-        {/* <Legend /> */}
+      <ComposedChart data={chartData} margin={{ right: 15, top: 10 }} style={{ overflow: "visible" }}
+        onMouseMove={({ activePayload }) => {
+          activePayload && setOnHoverTokenDetail(activePayload)
+        }
+        }
+      >
         <Tooltip cursor={{ fill: "#f00" }} />
-        <XAxis dataKey="timestamp" interval={interval} />
-        {/* <YAxis interval={interval} /> */}
-        <Line
+        <Legend />
+        <Area
+          legendType="none"
+          name="price"
           type="monotone"
+          connectNulls
           dataKey="price"
+          fill="#d53f8c36"
+          strokeWidth="2px"
+          dot
+          activeDot
           stroke="#3182CE"
-          activeDot={{ r: 8 }}
         />
-        <Line type="monotone" dataKey="price" stroke="#82ca9d" />
-      </LineChart>
+        <YAxis
+          strokeWidth="0px"
+          domain={["auto", "auto"]}
+          axisLine={false}
+          tickLine={false}
+          hide
+        />
+        <XAxis dataKey="timestamp" interval={interval} />
+      </ComposedChart>
     </ResponsiveContainer>
   );
-
-  const dataFetch = async () => {
-    try {
-      const response = await fetch(chainlist);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setChains(data);
-    } catch (error) {
-      console.error("There was a problem fetching data:", error);
-    }
-  };
 
   const protocolsFetch = async () => {
     try {
@@ -130,34 +154,34 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     protocolsFetch();
-    // dataFetch();
+
   }, [chains, protocol]);
 
-  const handleSellInvest = (sellTokenData: any) => {
-    console.log("sellTokenData :>> ", sellTokenData);
-    setSellTokenAddress(JSON.parse(sellTokenData).address);
-    setSellToken(JSON.parse(sellTokenData).symbol);
-    setSellTokenImg(JSON.parse(sellTokenData).logoURI);
-  };
 
-  const handleBuyInvest = (buyTokenData: any) => {
-    setBuyTokenAddress(JSON.parse(buyTokenData).address);
-    setBuyToken(JSON.parse(buyTokenData).symbol);
-    setbuyTokenImg(JSON.parse(buyTokenData).logoURI);
-  };
+  useEffect(() => {
+    setSellTokenAddress(selectedSellDetail?.address);
+    setSellToken(selectedSellDetail?.symbol);
+    setSellTokenImg(selectedSellDetail?.logoURI);
+  }, [selectedSellDetail]);
+  useEffect(() => {
+    setBuyTokenAddress(selectedReceiveDetail?.address);
+    setBuyToken(selectedReceiveDetail?.symbol);
+    setbuyTokenImg(selectedReceiveDetail?.logoURI);
+  }, [selectedReceiveDetail]);
 
   useEffect(() => {
     let value =
       activeChartTime == 1
         ? "period=1h&span=24"
         : activeChartTime == 2
-        ? "period=4h&span=42"
-        : "period=1d&span=30";
+          ? "period=4h&span=42"
+          : "period=1d&span=30";
     setSellTokenAddress(
       sellTokenAddress ? sellTokenAddress : chainTokenList[0]?.address
     );
     setSellToken(sellToken ? sellToken : chainTokenList[0]?.symbol);
     setSellTokenImg(sellTokenImg ? sellTokenImg : chainTokenList[0]?.logoURI);
+
     if (sellTokenAddress && buyTokenAddress) {
       tokenListFetch(value);
     }
@@ -167,6 +191,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     setChainTokenList(onSelectNetwork?.tokenList);
+    setSelectedSellDetail(onSelectNetwork?.tokenList[0]);
     setSellTokenAddress(onSelectNetwork?.address);
     setSellToken(onSelectNetwork?.symbol);
     setSellTokenImg(onSelectNetwork?.logoURI);
@@ -174,17 +199,11 @@ const Home: NextPage = () => {
 
   const getCurrentTokenPrice = async (sellValue: any) => {
     ApiService.getTokenCurrentPrice(sellValue).then(async (response: any) => {
-      setSellamount(response.coins[`bsc:${sellValue}`]?.price);
+      setCurrentSellamount(response.coins[`bsc:${sellValue}`]?.price);
     });
   };
   const tokenListFetch = async (value: String) => {
     try {
-      console.log(
-        "sellTokenAddress :>> ",
-        sellTokenAddress,
-        buyTokenAddress,
-        value
-      );
       await ApiService.getChartDetails(
         sellTokenAddress,
         buyTokenAddress,
@@ -192,7 +211,6 @@ const Home: NextPage = () => {
       ).then(async (response: any) => {
         let mainData: any = [];
         if (response) {
-          console.log("response  :>> ", response);
           await response.coins[`bsc:${sellTokenAddress}`]?.prices.map(
             (item: any, index: any) => {
               const date = DateTime.fromSeconds(
@@ -216,6 +234,9 @@ const Home: NextPage = () => {
     }
   };
   const OnChangesellToReceive = () => {
+    const sell = selectedSellDetail;
+    const receive = selectedReceiveDetail;
+
     setSellTokenAddress(buyTokenAddress);
     setSellToken(buyToken);
     setSellTokenImg(buyTokenImg);
@@ -223,19 +244,33 @@ const Home: NextPage = () => {
     setBuyTokenAddress(sellTokenAddress);
     setBuyToken(sellToken);
     setbuyTokenImg(sellTokenImg);
+
+    setSelectedReceiveDetail(sell);
+    setSelectedSellDetail(receive);
   };
-
-  const investCalculation = (value: String) => {
-    var amount = 0;
-
-    amount = sellAmount * (investValue || 1);
-  };
-
+  const createPosition = () => {
+  
+    const value: any = {
+      cardId: cardId,
+      sellDetail: selectedSellDetail,
+      receiveDetail: selectedReceiveDetail,
+      investValue: investValue,
+      currentSellAmount: currentSellAmount,
+      executesDay: executesDay.value,
+      executesDuration: executesDuration
+    }
+    
+    let item =[...appContext?.activePositionList,value]
+    appContext.setactivePositionList(item)
+      router.push('./positions')
+   
+  }
   return (
     <>
       <div className={styles.container}>
-        <main className={styles.main}>
+        <main className={styles.main} style={{ alignItems: "flex-start" }}>
           <Card minWidth="450px" maxW="md">
+
             <CardBody>
               <Flex>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -263,25 +298,27 @@ const Home: NextPage = () => {
                                   }
                                   focusBorderColor="pink.400"
                                   placeholder={txt.select_option}
-                                  {...register("name", {
-                                    required: "Please select the network",
-                                  })}
-                                  onChange={(event: any) => {
-                                    setOnSelectNetwork(
-                                      JSON.parse(event.target.value)
+                                  onBlur={() => {
+                                    setOnSelectNetworkError(
+                                      !onSelectNetwork ? true : false
                                     );
-                                    console.log(
-                                      "Network value :>> ",
-                                      JSON.parse(event.target.value)
+                                  }}
+                                  onChange={(event: any) => {
+                                    event?.target?.value &&
+                                      setOnSelectNetwork(
+                                        JSON.parse(event?.target?.value)
+                                      );
+                                    setOnSelectNetworkError(
+                                      !event?.target?.value ? true : false
                                     );
                                   }}
                                 >
                                   {chains.map((item, index) => (
                                     <option
+                                      selected={index == 0 && true}
                                       key={item.chainId}
                                       value={JSON.stringify(item)}
                                     >
-                                      {" "}
                                       <img
                                         style={{
                                           width: "50px",
@@ -294,14 +331,11 @@ const Home: NextPage = () => {
                                     </option>
                                   ))}
                                 </Select>
-                                {errors.name && (
+                                {onSelectNetworkError && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
                                 )}
-                                {/* <FormErrorMessage>
-                                  <Text> {errors.name}</Text>
-                                </FormErrorMessage> */}
                                 <Heading mt={5} mb="8px" size="sm">
                                   {txt.choose_protocol}
                                 </Heading>
@@ -313,19 +347,23 @@ const Home: NextPage = () => {
                                   }
                                   focusBorderColor="pink.400"
                                   placeholder={txt.select_option}
-                                  {...register("protocol", {
-                                    required: "Please select the protocol",
-                                  })}
+                                  onBlur={() => {
+                                    setOnChangeProtocolError(
+                                      !onChangeProtocol ? true : false
+                                    );
+                                  }}
                                   onChange={(event: any) => {
                                     setOnChangeProtocol(event.target.value);
-                                    console.log(
-                                      "Protocol value :>> ",
-                                      event.target.value
+                                    setOnChangeProtocolError(
+                                      !event?.target?.value ? true : false
                                     );
                                   }}
                                 >
-                                  {protocol.map((item) => (
-                                    <option value={item.name}>
+                                  {protocol.map((item, index) => (
+                                    <option
+                                      value={item.name}
+                                      selected={index == 0 && true}
+                                    >
                                       {" "}
                                       <img
                                         style={{
@@ -335,18 +373,16 @@ const Home: NextPage = () => {
                                         }}
                                         src={item.logoURI}
                                       ></img>
+
                                       {item.name}
                                     </option>
                                   ))}
                                 </Select>
-                                {errors.protocol && (
+                                {onChangeProtocolError && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
                                 )}
-                                {/* <FormErrorMessage>
-                                  <Text> {errors.protocol}</Text>
-                                </FormErrorMessage> */}
                               </CardBody>
                             </Card>
 
@@ -373,7 +409,16 @@ const Home: NextPage = () => {
                                   <SearchTokenModal
                                     tokenlist={chainTokenList}
                                     isSell={true}
-                                    getTokenAddressData={handleSellInvest}
+                                    setSelectedSellDetail={
+                                      setSelectedSellDetail
+                                    }
+                                    selectedSellDetail={selectedSellDetail}
+                                    setSelectedReceiveDetail={
+                                      setSelectedReceiveDetail
+                                    }
+                                    selectedReceiveDetail={
+                                      selectedReceiveDetail
+                                    }
                                   ></SearchTokenModal>
                                   <Icon
                                     onClick={() =>
@@ -395,17 +440,38 @@ const Home: NextPage = () => {
                                     <SearchTokenModal
                                       tokenlist={chainTokenList}
                                       isSell={false}
-                                      getTokenAddressData={handleBuyInvest}
+                                      setSelectedSellDetail={
+                                        setSelectedSellDetail
+                                      }
+                                      selectedSellDetail={selectedSellDetail}
+                                      setSelectedReceiveDetail={
+                                        setSelectedReceiveDetail
+                                      }
+                                      selectedReceiveDetail={
+                                        selectedReceiveDetail
+                                      }
+                                      setIsClose={(value: any) => {
+                                        if (value) {
+                                          setSelectedReceiveDetailError(
+                                            !selectedReceiveDetail.address
+                                              ? false
+                                              : true
+                                          );
+                                        } else {
+                                          setSelectedReceiveDetailError(true);
+                                        }
+                                      }}
                                     ></SearchTokenModal>
-                                    {!buyTokenAddress && (
-                                      <Text
-                                        fontSize="xs"
-                                        color="red"
-                                        textAlign="right"
-                                      >
-                                        {txt.required_error}
-                                      </Text>
-                                    )}
+                                    {!buyTokenAddress &&
+                                      selectedReceiveDetailError == false && (
+                                        <Text
+                                          fontSize="xs"
+                                          color="red"
+                                          textAlign="right"
+                                        >
+                                          {txt.required_error}
+                                        </Text>
+                                      )}
                                   </Stack>
                                 </Stack>
                               </CardBody>
@@ -444,19 +510,20 @@ const Home: NextPage = () => {
                                       }
                                     />
                                     <Input
+                                      onBlur={() => {
+                                        setInvestValueError(
+                                          !investValue ? false : true
+                                        );
+                                      }}
                                       focusBorderColor="pink.400"
                                       errorBorderColor="red.300"
                                       type="number"
-                                      {...register("invest", {
-                                        required:
-                                          "Please select the invest value",
-                                      })}
                                       placeholder="0"
+                                      value={investValue}
                                       onChange={(event: any) => {
                                         setInvestValue(event.target.value);
-                                        console.log(
-                                          "InvestValue value :>> ",
-                                          event.target.value
+                                        setInvestValueError(
+                                          !event.target.value ? false : true
                                         );
                                       }}
                                     />
@@ -466,7 +533,7 @@ const Home: NextPage = () => {
                                       textAlign="left"
                                     >
                                       {"$"}
-                                      {sellAmount * (investValue || 1)}
+                                      {currentSellAmount * (investValue || 1)}
                                     </Text>
                                     <InputLeftElement
                                       pointerEvents="none"
@@ -480,21 +547,21 @@ const Home: NextPage = () => {
                                     />
                                   </InputGroup>
                                   <Button
-                                    isDisabled
+                                    isDisabled={isConnected ? false : true}
                                     colorScheme="pink"
                                     variant="outline"
                                   >
                                     {txt.max}
                                   </Button>
                                   <Button
-                                    isDisabled
+                                    isDisabled={isConnected ? false : true}
                                     colorScheme="pink"
                                     variant="outline"
                                   >
                                     {txt.half}
                                   </Button>
                                 </Stack>
-                                {errors.invest && (
+                                {investValueError == false && (
                                   <Text fontSize="xs" color="red">
                                     {txt.required_error}
                                   </Text>
@@ -548,7 +615,7 @@ const Home: NextPage = () => {
                                   spacing={4}
                                 >
                                   <Heading mb="8px" size="sm">
-                                    {txt.how_many_day}
+                                    {txt.how_many}
                                     {executesDay.value}
                                     {"?"}
                                   </Heading>
@@ -559,6 +626,11 @@ const Home: NextPage = () => {
                                   spacing={4}
                                 >
                                   <Input
+                                    onBlur={() => {
+                                      setexecutesDurationError(
+                                        executesDuration ? true : false
+                                      );
+                                    }}
                                     focusBorderColor="pink.400"
                                     errorBorderColor="red.300"
                                     colorScheme="pink"
@@ -566,17 +638,22 @@ const Home: NextPage = () => {
                                     type="number"
                                     value={executesDuration}
                                     onChange={(e: any) => {
-                                      console.log("value", e.target.value);
                                       setexecutesDuration(e.target.value);
+                                      setexecutesDurationError(
+                                        e.target.value ? true : false
+                                      );
                                     }}
                                   />
                                   {duration.map((item) => {
                                     return (
                                       <Button
                                         key={item.value}
-                                        onClick={() =>
-                                          setexecutesDuration(item?.value)
-                                        }
+                                        onClick={() => {
+                                          setexecutesDuration(item?.value);
+                                          setexecutesDurationError(
+                                            item?.value ? true : false
+                                          );
+                                        }}
                                         colorScheme={
                                           executesDuration == item.value
                                             ? "pink"
@@ -589,6 +666,11 @@ const Home: NextPage = () => {
                                     );
                                   })}
                                 </Stack>
+                                {executesDurationError == false && (
+                                  <Text fontSize="xs" color="red">
+                                    {txt.required_error}
+                                  </Text>
+                                )}
                               </CardBody>
                             </Card>
 
@@ -625,8 +707,17 @@ const Home: NextPage = () => {
                                         <Button
                                           type="submit"
                                           width={"100%"}
-                                          colorScheme="pink"
+                                          colorScheme={
+                                            !executesDurationError ||
+                                              !investValueError ||
+                                              !selectedReceiveDetailError
+                                              ? "gray"
+                                              : "pink"
+                                          }
                                           variant={"solid"}
+                                          onClick={() =>
+                                            !isLastStep && setIsContinue(true)
+                                          }
                                         >
                                           {isLastStep
                                             ? txt.finish
@@ -684,7 +775,7 @@ const Home: NextPage = () => {
                                     colorScheme="pink"
                                     variant="outline"
                                   >
-                                    {sellAmount * (investValue || 1)}
+                                    {currentSellAmount * (investValue || 1)}
                                   </Button>
                                 </Stack>
                                 <Stack
@@ -708,7 +799,7 @@ const Home: NextPage = () => {
                                     colorScheme="pink"
                                     variant="outline"
                                   >
-                                    {(sellAmount * (investValue || 1)) /
+                                    {(currentSellAmount * (investValue || 1)) /
                                       (executesDuration || 1)}
                                   </Button>
                                 </Stack>
@@ -736,7 +827,7 @@ const Home: NextPage = () => {
                               <CardBody borderRadius="lg">
                                 <Button
                                   isDisabled={activeStep === 0}
-                                  // onClick={prevStep}
+                                  onClick={() => createPosition()}
                                   width={"100%"}
                                   colorScheme="pink"
                                   variant={"solid"}
@@ -777,7 +868,7 @@ const Home: NextPage = () => {
               }}
             >
               <Text color="grey" as="b" fontSize="2xl">
-                Select a pair to view its price history
+                {txt.select_a_pair_to_view_its_price_history}
               </Text>
             </Card>
           ) : (
@@ -791,7 +882,7 @@ const Home: NextPage = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Heading size={"lg"}>$1906.36 USD</Heading>
+                  <Heading size={"lg"}>{'$'}{onHoverTokenDetail[0] ? onHoverTokenDetail[0]?.payload?.price : '00.00'}</Heading>
                   <Stack
                     style={{
                       display: "flex",
@@ -834,12 +925,12 @@ const Home: NextPage = () => {
                     {" "}
                     ●{" "}
                   </Heading>{" "}
-                  <Text>{txt.defiWrap}</Text>{" "}
-                  <Heading color={"green.500"} pl={5} size="md" pr={1}>
+                  <Text>{txt.defiLlama}</Text>{" "}
+                  {/* <Heading color={"green.500"} pl={5} size="md" pr={1}>
                     {" "}
                     ●{" "}
                   </Heading>{" "}
-                  <Text>{txt.defiLlama}</Text>
+                  <Text>{txt.defiWrap}</Text> */}
                 </Stack>
 
                 {chart("preserveStart")}

@@ -7,6 +7,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import { Head } from "../components/layout/Head";
 import SEO from "../components/SEO";
+import GlobalState from "../context/globalState";
 
 // //particle code
 // import { ModalProvider, Ethereum, EthereumGoerli, evmWallets } from '@particle-network/connect-react-ui';
@@ -19,9 +20,10 @@ export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted();
   const router = useRouter();
 
-    //the root component
-    return (
-      <ChakraProvider>
+  //the root component
+  return (
+    <ChakraProvider>
+      <GlobalState>
         <SEO />
         <Head />
         <Web3Provider>
@@ -31,6 +33,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </Layout>
           )}
         </Web3Provider>
-      </ChakraProvider>
-    );
+      </GlobalState>
+    </ChakraProvider>
+  );
 }
