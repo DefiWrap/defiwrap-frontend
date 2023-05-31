@@ -41,6 +41,8 @@
     "react-dom": "^18.1.0",
     "react-hook-form": "^7.43.9",
     "react-icons": "^4.8.0",
+    "react-router": "^6.11.2",
+    "react-router-dom": "^6.11.2",
     "recharts": "^2.6.2",
     "siwe": "^1.1.6",
     "use-debounce": "^9.0.3",
