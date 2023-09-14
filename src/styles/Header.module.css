@@ -1,7 +1,5 @@
 .navItem {
-  text-decoration: none;
-  background: #d53f8c;
-  cursor: pointer;
-  color: #fff;
-  border-radius:10px;
+  background: #d53f8c !important;
+  color: white !important;
+  
 }

@@ -14,6 +14,7 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  Image
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -51,7 +52,9 @@ export default function HeaderRepsonsive(props: Props) {
     <Box>
       <Flex
         bg={useColorModeValue('white', 'gray.800')}
-        color={useColorModeValue('gray.600', 'white')}
+        color={ useColorModeValue( 'gray.600', 'white' ) }
+        mt="1"
+        mb="1"
         minH={'60px'}
         py={{ base: 2 }}
         px={{ base: 4 }}
@@ -73,12 +76,13 @@ export default function HeaderRepsonsive(props: Props) {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Text
+          {/* <Text
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
             fontFamily={'heading'}
             color={useColorModeValue('gray.800', 'white')}>
-            <Logo />
-          </Text>
+           <Logo /> 
+            
+          </Text> */}
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             <DesktopNav />
@@ -86,7 +90,7 @@ export default function HeaderRepsonsive(props: Props) {
         </Flex>
 
         
-        <Flex alignItems="center" gap={4}>
+        <Flex fontSize="sm" alignItems="center" gap={4}>
           <ConnectButton
             accountStatus={{
               smallScreen: "address",
@@ -117,25 +121,35 @@ const DesktopNav = () => {
 
 
   return (
-    <Stack direction={'row'} spacing={4}>
+    <Stack direction={ 'row' } >
+       <Image
+        width={"160px"}
+        pr="20px"
+        alt={"Logo Image"}
+          
+          src={"/logo.png"}
+        />
       {NAV_ITEMS.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
-            <PopoverTrigger>
-                      <Link
-                           as={NextLink}
-          
+            <Link
+                as={NextLink}
                 href={navItem.href ?? '#'}
                 fontSize={'md'}
                 fontWeight={500}
-                          color={ linkColor }
                 >
-                           <Text
+              <Button
                     className={
                       router.pathname === navItem.href ? styles.navItem : ""
                     }
+                  size="sm"
+                  color={linkColor}
                     p={4}
-                    fontSize="rem"
+                  _selected={ {
+                     color: "white",
+                      bg: "pink",
+                      rounded: "lg",
+                  }}
                     _hover={{
                       color: "white",
                       bg: linkHoverBackgroundColor,
@@ -144,9 +158,9 @@ const DesktopNav = () => {
                               } }>
                                          {navItem.label}
      
-                    </Text>
+                    </Button>
               </Link>
-            </PopoverTrigger>
+            
 
             {navItem.children && (
               <PopoverContent
@@ -207,14 +221,25 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
 
 const MobileNav = () => {
   return (
-    <Stack
+    <>
+     <Image
+          width={"160px"}
+         
+          alt={"Login Image"}
+          
+          src={"/logo.png"}
+      />
+      <Stack
       bg={useColorModeValue('white', 'gray.800')}
       p={4}
-      display={{ md: 'none' }}>
+      display={ { md: 'none' } }>
+      
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
     </Stack>
+    </>
+    
   );
 };
 
@@ -224,11 +249,11 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
   return (
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
-        py={2}
+        py={"2"}
         as={Link}
         href={href ?? '#'}
-        justify={'space-between'}
-        align={'center'}
+        // justify={'space-between'}
+        // align={'center'}
         _hover={{
           textDecoration: 'none',
         }}>
@@ -281,7 +306,7 @@ const NAV_ITEMS: Array<NavItem> = [
     href: "/",
     },
   {
-    label: "invest",
+    label: "Invest",
       href: "/invest",
     
       children: [

@@ -128,7 +128,6 @@ const DesktopNav = () => {
                   href={navItem.href}
                   fontSize={"lg"}
                   fontWeight={500}
-                  color={ linkColor }
                   rounded={"sm"}
                   _selected={{ color: "white", bg: "#D53F8C" }}
                 >
